@@ -30,13 +30,13 @@ namespace FileManager.BLL.Files
 			var managedUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
 			if (managedUser == null)
 			{
-				return new DefaultResponse(false, ["Incorrect userId"]);
+				return new DefaultResponse(["Incorrect userId"]);
 			}
 
 			var storage = await _dbContext.Storages.FirstOrDefaultAsync(s => s.AllowWrite, cancellationToken);
 			if (storage == null)
 			{
-				return new DefaultResponse(false, ["No storage with write access"]);
+				return new DefaultResponse(["No storage with write access"]);
 			}
 
 			var dataSet = new DAL.Domain.DataSet.DataSet
@@ -53,7 +53,7 @@ namespace FileManager.BLL.Files
 
 			if (!_multipartRequestHelper.IsMultipartContentType(request.ContentType))
 			{
-				return new DefaultResponse(false, ["Unsupported media type"]);
+				return new DefaultResponse(["Unsupported media type"]);
 			}
 
 			var boundary = _multipartRequestHelper.GetBoundary(
@@ -130,10 +130,10 @@ namespace FileManager.BLL.Files
 			if (fileIndex == _failedLoadFilesWithErrors.Count)
 			{
 				_dbContext.DataSets.Remove(dataSet);
-				await _dbContext.SaveChangesAsync();
+				await _dbContext.SaveChangesAsync(cancellationToken);
 				Directory.Delete(dataSet.GetDataSetDirectory());
 				_failedLoadFilesWithErrors.Add("All files failed to load");
-				return new DefaultResponse(false, [.. _failedLoadFilesWithErrors]);
+				return new DefaultResponse([.. _failedLoadFilesWithErrors]);
 			}
 
 			dataSet.Binaries = binaries;
@@ -145,12 +145,12 @@ namespace FileManager.BLL.Files
 			if (_failedLoadFilesWithErrors.Count != 0)
 			{
 				_failedLoadFilesWithErrors.Add("Some files failed to load");
-				return new DefaultResponse(false, [.. _failedLoadFilesWithErrors]);
+				return new DefaultResponse([.. _failedLoadFilesWithErrors]);
 			}
 
 			_percentageChecker.RemoveElement(request.UserId);
 
-			return new DefaultResponse(true, null);
+			return new DefaultResponse(null);
 		}
 	}
 }

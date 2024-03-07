@@ -1,11 +1,12 @@
-﻿using FileManager.Contract.Models;
+﻿using FileManager.Contract.Default;
+using FileManager.Contract.Models;
 
 namespace FileManager.Contract.Files
 {
-	public class GetListOfUploadedFilesResponse
+	public class GetListOfUploadedFilesResponse(
+		ICollection<DataSetModel> dataSetModels,
+		string[]? errors = null) : DefaultResponse(errors)
 	{
-		public ICollection<DataSetModel> DataSetsModels { get; set; }
-		public bool IsSuccess { get; set; }
-		public string Message { get; set; }
+		public ICollection<DataSetModel> DataSetsModels { get; set; } = dataSetModels;
 	}
 }

@@ -3,6 +3,7 @@ using FileManager.Contract.Files;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
 namespace FileManager.Controllers
@@ -30,7 +31,7 @@ namespace FileManager.Controllers
 			var request = new UploadFilesRequest(userId, Request.ContentType, Request.Body);
 			var response = await _mediator.Send(request);
 
-			if (!response.IsSuccess)
+			if (!response.Errors.IsNullOrEmpty())
 			{
 				return BadRequest(response.Errors);
 			}
@@ -52,9 +53,9 @@ namespace FileManager.Controllers
 			var request = new GetListOfUploadedFilesRequest(userId);
 			var response = await _mediator.Send(request);
 
-			if (!response.IsSuccess)
+			if (!response.Errors.IsNullOrEmpty())
 			{
-				return BadRequest(response.Message);
+				return BadRequest(response.Errors);
 			}
 
 			return Ok(response);
@@ -81,9 +82,9 @@ namespace FileManager.Controllers
 			var request = new DownloadFilesRequest(dataSetId, dataId);
 			var response = await _mediator.Send(request);
 
-			if (!response.IsSuccess)
+			if (!response.Errors.IsNullOrEmpty())
 			{
-				return BadRequest(response.Message);
+				return BadRequest(response.Errors);
 			}
 
 			return new FileStreamResult(response.FileStream, response.ContentType)
@@ -135,37 +136,33 @@ namespace FileManager.Controllers
 
 
 		[HttpGet]
-		[Authorize]
+		//[Authorize]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<ActionResult> DownloadFilesViaLink([FromQuery] string token)
 		{
-			var decryptRequest = new DecryptOneTimeLinkRequest(token);
-			try
+			var decryptResponse = await _mediator.Send(new DecryptOneTimeLinkRequest(token));
+
+			if (decryptResponse.Errors != null)
 			{
-				var decryptResponse = await _mediator.Send(decryptRequest);
-
-				var downloadRequest = new DownloadFilesRequest(decryptResponse.DataSetId, decryptResponse.DataId);
-				var downloadResponse = await _mediator.Send(downloadRequest);
-
-				if (!downloadResponse.IsSuccess)
-				{
-					return BadRequest(downloadResponse.Message);
-				}
-
-				var fsResult = new FileStreamResult(downloadResponse.FileStream, downloadResponse.ContentType)
-				{
-					FileDownloadName = downloadResponse.FileDownloadName
-				};
-
-				await _mediator.Send(new DeleteOneTimeLinkFromDbRequest(token));
-
-				return fsResult;
+				return BadRequest(decryptResponse.Errors);
 			}
-			catch (Exception ex)
+
+			var downloadResponse = await _mediator.Send(new DownloadFilesRequest(decryptResponse.DataSetId, decryptResponse.DataId));
+
+			if (downloadResponse.Errors != null)
 			{
-				return BadRequest(ex.Message);
+				return BadRequest(downloadResponse.Errors);
 			}
+
+			var fsResult = new FileStreamResult(downloadResponse.FileStream, downloadResponse.ContentType)
+			{
+				FileDownloadName = downloadResponse.FileDownloadName
+			};
+
+			await _mediator.Send(new DeleteOneTimeLinkFromDbRequest(token));
+
+			return fsResult;
 		}
 		
 

@@ -1,8 +1,11 @@
 ﻿namespace FileManager.Contract.Default
 {
-	public class DefaultResponse(bool isSuccess, string[]? errors)
+	public class DefaultResponse(string[]? errors)
 	{
-		public bool IsSuccess { get; set; } = isSuccess;
+		/// <summary>
+		/// Свойство, отвечающее за хранение ошибок в случае неудачного выполнения запроса
+		/// Будет null, если запрос выполнен успешно
+		/// </summary>
 		public string[]? Errors { get; set; } = errors;
 	}
 }

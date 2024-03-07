@@ -1,8 +1,21 @@
-﻿namespace FileManager.Contract.Files
+﻿using FileManager.Contract.Default;
+
+namespace FileManager.Contract.Files
 {
-	public class EncryptOneTimeLinkResponse(string oneTimeLink, DateTime linkExpTime)
+	public class EncryptOneTimeLinkResponse(
+		string? oneTimeLink, 
+		DateTime? linkExpTime,
+		string[]? errors) : DefaultResponse(errors)
 	{
-		public string OneTimeLink { get; set; } = oneTimeLink;
-		public DateTime LinkExpirationTime { get; set; } = linkExpTime;
+		/// <summary>
+		/// Ссылка для скачивания файла
+		/// Будет null, когда произошла ошибка в процессе создания ссылки или сохранения ссылки в БД
+		/// </summary>
+		public string? OneTimeLink { get; set; } = oneTimeLink;
+		/// <summary>
+		/// Время истечения ссылки
+		/// Будет null, когда произошла ошибка в процессе создания ссылки или сохранения ссылки в БД
+		/// </summary>
+		public DateTime? LinkExpirationTime { get; set; } = linkExpTime;
 	}
 }

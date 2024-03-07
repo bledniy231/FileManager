@@ -32,21 +32,13 @@ namespace FileManager.BLL.Files
 
 				if (binary == null)
 				{
-					return new DownloadFilesResponse
-					{
-						IsSuccess = false,
-						Message = $"Cannot find a binary in DB from data set \'{request.DataSetId}\' with data id \'{request.DataId}\'"
-					};
+					return new DownloadFilesResponse(null, null, null, [$"Cannot find a binary in DB from data set \'{request.DataSetId}\' with data id \'{request.DataId}\'"]);
 				}
 
 				var file = binary.GetInternalFile();
 				if (!file.Exists)
 				{
-					return new DownloadFilesResponse()
-					{
-						IsSuccess = false,
-						Message = $"Cannot find a physical file from data set \'{request.DataSetId}\' with data id \'{request.DataId}\'"
-					};
+					return new DownloadFilesResponse(null, null, null, [$"Cannot find a physical file from data set \'{request.DataSetId}\' with data id \'{request.DataId}\'"]);
 				}
 
 				try
@@ -70,11 +62,7 @@ namespace FileManager.BLL.Files
 				}
 				catch (Exception ex)
 				{
-					return new DownloadFilesResponse()
-					{
-						IsSuccess = false,
-						Message = ex.Message
-					};
+					return new DownloadFilesResponse(null, null, null, [ex.Message]);
 				}
 			}
 			else
@@ -87,11 +75,7 @@ namespace FileManager.BLL.Files
 
 				if (dataSet == null)
 				{
-					return new DownloadFilesResponse()
-					{
-						IsSuccess = false,
-						Message = $"Cannot find a data set in DB from data set '{request.DataSetId}'"
-					};
+					return new DownloadFilesResponse(null, null, null, [$"Cannot find a data set in DB from data set '{request.DataSetId}'"]);
 				}
 
 				try
@@ -106,11 +90,7 @@ namespace FileManager.BLL.Files
 				}
 				catch (Exception ex)
 				{
-					return new DownloadFilesResponse()
-					{
-						IsSuccess = false,
-						Message = ex.Message
-					};
+					return new DownloadFilesResponse(null, null, null, [ex.Message]);
 				}
 			}
 		}
@@ -124,13 +104,7 @@ namespace FileManager.BLL.Files
 			string tempZipPath = await zipFunc();
 			var fileStream = new FileStream(tempZipPath, FileMode.Open, FileAccess.Read);
 
-			return new DownloadFilesResponse()
-			{
-				IsSuccess = true,
-				FileStream = fileStream,
-				FileDownloadName = Path.GetFileName(tempZipPath),
-				ContentType = "application/zip"
-			};
+			return new DownloadFilesResponse(fileStream, "application/zip", Path.GetFileName(tempZipPath), null);
 		}
 	}
 }

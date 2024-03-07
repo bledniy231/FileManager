@@ -25,7 +25,7 @@ namespace FileManager.BLL.ApplicationUser
 				return new UserAuthResponse
 				{
 					IsSuccess = false,
-					Message = $"No accounts registered with {request.Email}"
+					FailedMessage = $"No accounts registered with {request.Email}"
 				};
 			}
 
@@ -34,7 +34,7 @@ namespace FileManager.BLL.ApplicationUser
 				return new UserAuthResponse
 				{
 					IsSuccess = false,
-					Message = $"Incorrect password for {request.Email}"
+					FailedMessage = $"Incorrect password for {request.Email}"
 				};
 			}
 
@@ -51,7 +51,7 @@ namespace FileManager.BLL.ApplicationUser
 				return new UserAuthResponse
 				{
 					IsSuccess = false,
-					Message = $"Cannot update user information for {request.Email}"
+					FailedMessage = $"Cannot update user information for {request.Email}"
 				};
 			}
 

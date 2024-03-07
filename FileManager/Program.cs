@@ -6,7 +6,6 @@ using FileManager.BLL.UploadPercentageChecker;
 using FileManager.DAL;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Reflection;
 

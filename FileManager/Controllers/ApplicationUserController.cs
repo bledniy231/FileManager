@@ -1,7 +1,9 @@
-﻿using FileManager.Contract.ApplicationUser;
+﻿using Azure;
+using FileManager.Contract.ApplicationUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FileManager.Controllers
 {
@@ -20,7 +22,7 @@ namespace FileManager.Controllers
 
 			if (!userAuthResponse.IsSuccess)
 			{
-				return BadRequest(userAuthResponse.Message);
+				return BadRequest(userAuthResponse.FailedMessage);
 			}
 
 			return Ok(userAuthResponse);
@@ -65,7 +67,7 @@ namespace FileManager.Controllers
 		{
 			var revokeUserResponse = await _mediator.Send(new RevokeUserRequest(username));
 
-			if (!revokeUserResponse.IsSuccess)
+			if (!revokeUserResponse.Errors.IsNullOrEmpty())
 			{
 				return BadRequest(revokeUserResponse.Errors);
 			}

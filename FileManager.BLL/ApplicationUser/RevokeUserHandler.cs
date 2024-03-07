@@ -17,13 +17,13 @@ namespace FileManager.BLL.ApplicationUser
 			var user = await _userManager.FindByNameAsync(request.Username);
 			if (user == null)
 			{
-				return new DefaultResponse(false, [$"Cannot find user with username {request.Username}"]);
+				return new DefaultResponse([$"Cannot find user with username {request.Username}"]);
 			}
 
 			user.RefreshToken = null;
 			await _userManager.UpdateAsync(user);
 
-			return new DefaultResponse(true, null);
+			return new DefaultResponse(null);
 		}
 	}
 }

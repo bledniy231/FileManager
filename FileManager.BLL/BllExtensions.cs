@@ -19,6 +19,6 @@
 
 		public static string GetDataSetDirectory(this DAL.Domain.DataSet.DataSet dataSet)
 			=> Path.GetDirectoryName(dataSet.Binaries.First().GetInternalFile().FullName) 
-				?? throw new ArgumentException("Connot find file directory");
+				?? throw new ArgumentException("Cannot find file directory");
 	}
 }

@@ -20,7 +20,7 @@ namespace FileManager.BLL.Files
 				.FirstAsync(ol => ol.UrlEncryptedToken.Equals(encToken), cancellationToken);
 
 			_dbContext.OneTimeLinks.Remove(oneTimeLink);
-			await _dbContext.SaveChangesAsync();
+			await _dbContext.SaveChangesAsync(cancellationToken);
 
 			return Unit.Value;
 		}

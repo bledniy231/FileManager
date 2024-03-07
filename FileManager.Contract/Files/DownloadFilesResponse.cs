@@ -1,12 +1,15 @@
-﻿namespace FileManager.Contract.Files
-{
-	public class DownloadFilesResponse
-	{
-		public FileStream FileStream { get; set; }
-		public string ContentType { get; set; }
-		public string FileDownloadName { get; set; }
+﻿using FileManager.Contract.Default;
 
-		public bool IsSuccess { get; set; }
-		public string? Message { get; set; }
+namespace FileManager.Contract.Files
+{
+	public class DownloadFilesResponse(
+		FileStream fileStream,
+		string contentType,
+		string fileDownloadName,
+		string[]? errors) : DefaultResponse(errors)
+	{
+		public FileStream FileStream { get; set; } = fileStream;
+		public string ContentType { get; set; } = contentType;
+		public string FileDownloadName { get; set; } = fileDownloadName;
 	}
 }

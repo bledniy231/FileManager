@@ -2,6 +2,7 @@
 using FileManager.Contract.Files;
 using FileManager.DAL;
 using MediatR;
+using System.Net;
 using System.Web;
 
 namespace FileManager.BLL.Files
@@ -19,18 +20,34 @@ namespace FileManager.BLL.Files
 			var expTime = DateTime.UtcNow.AddDays(1);
 
 			string plainTextToEncrypt = $"{expTime:yyyyMMddHHmm}_{request.DataSetId}_{request.DataId}";
-			string encryptedToken = await _cryptoLinkManager.EncryptAsync(plainTextToEncrypt);
-
-			var urlEncryptedToken = HttpUtility.UrlEncode(encryptedToken);
+			string encryptedToken;
+			string? urlEncryptedToken;
+			try
+			{
+				encryptedToken = await _cryptoLinkManager.EncryptAsync(plainTextToEncrypt);
+				urlEncryptedToken = Uri.EscapeDataString(encryptedToken);
+			}
+			catch (Exception ex)
+			{
+				return new EncryptOneTimeLinkResponse(null, expTime, [ex.Message]);
+			}
 
 			_dbContext.OneTimeLinks.Add(new DAL.Domain.DataSet.OneTimeLink
 			{
 				LinkExpirationTime = expTime,
 				UrlEncryptedToken = urlEncryptedToken
 			});
-			await _dbContext.SaveChangesAsync(cancellationToken);
 
-			return new EncryptOneTimeLinkResponse($"api/Files/DownloadFilesViaLink?token={urlEncryptedToken}", expTime);
+			try
+			{
+				await _dbContext.SaveChangesAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return new EncryptOneTimeLinkResponse(null, expTime, [ex.Message]);
+			}
+
+			return new EncryptOneTimeLinkResponse($"api/Files/DownloadFilesViaLink?token={urlEncryptedToken}", expTime, null);
 		}
 	}
 }

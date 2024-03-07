@@ -22,29 +22,23 @@ namespace FileManager.BLL.Files
 
 			if (dataSets == null)
 			{
-				return new GetListOfUploadedFilesResponse
-				{
-					IsSuccess = false,
-					Message = $"Cannot find data sets for user with userId: {request.UserId}"
-				};
+				return new GetListOfUploadedFilesResponse(null, [$"Cannot find data sets for user with userId: {request.UserId}"]);
 			}
 
-			return new GetListOfUploadedFilesResponse
+			var dataSetModels = dataSets.Select(ds => new DataSetModel
 			{
-				DataSetsModels = dataSets.Select(ds => new DataSetModel
+				OwnerId = ds.OwnerId,
+				Id = ds.Id,
+				CreatedAt = ds.CreatedAt,
+				Binaries = ds.Binaries.Select(b => new BinaryDataModel
 				{
-					OwnerId = ds.OwnerId,
-					Id = ds.Id,
-					CreatedAt = ds.CreatedAt,
-					Binaries = ds.Binaries.Select(b => new BinaryDataModel
-					{
-						DataId = b.DataId,
-						Filename = b.Filename,
-						Length = b.Length
-					}).ToList()
-				}).ToList(),
-				IsSuccess = true
-			};
+					DataId = b.DataId,
+					Filename = b.Filename,
+					Length = b.Length
+				}).ToList()
+			}).ToList();
+
+			return new GetListOfUploadedFilesResponse(dataSetModels, null);
 		}
 	}
 }
