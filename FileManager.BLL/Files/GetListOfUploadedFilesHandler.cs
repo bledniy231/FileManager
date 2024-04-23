@@ -1,5 +1,5 @@
 ﻿using FileManager.Contract.Files;
-using FileManager.Contract.Models;
+using FileManager.Contract.Models.DataSet;
 using FileManager.DAL;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

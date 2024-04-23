@@ -1,9 +1,9 @@
 ﻿using FileManager.Contract.Default;
-using FileManager.Contract.Models;
+using FileManager.Contract.Models.DataSet;
 
 namespace FileManager.Contract.Files
 {
-	public class GetListOfUploadedFilesResponse(
+    public class GetListOfUploadedFilesResponse(
 		ICollection<DataSetModel> dataSetModels,
 		string[]? errors = null) : DefaultResponse(errors)
 	{

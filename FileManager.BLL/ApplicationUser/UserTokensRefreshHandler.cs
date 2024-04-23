@@ -66,7 +66,7 @@ namespace FileManager.BLL.ApplicationUser
 
 			return new UserTokensRefreshResponse
 			{
-				NewTokens = new Contract.Models.JwtTokensModel
+				NewTokens = new Contract.Models.JwtTokens.JwtTokensModel
 				{
 					AccessToken = newAccessToken,
 					RefreshToken = newRefreshToken

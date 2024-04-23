@@ -3,12 +3,13 @@ using FileManager.DAL.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Timers;
-using FileManager.Contract.Models;
 using System.Reflection;
+using FileManager.DAL.Domain.PianoMentor.Courses;
+using FileManager.Contract.Models.PianoMentor.Courses;
 
 namespace FileManager.DAL
 {
-	public class FileManagerDbContext(
+    public class FileManagerDbContext(
 		DbContextOptions<FileManagerDbContext> options) 
 		: IdentityDbContext<FileManagerUser, IdentityRole<long>, long>(options)
 	{
@@ -16,12 +17,12 @@ namespace FileManager.DAL
 		public DbSet<Domain.DataSet.BinaryData> Binaries { get; set; }
 		public DbSet<Domain.DataSet.Storage> Storages { get; set; }
 		public DbSet<Domain.DataSet.OneTimeLink> OneTimeLinks { get; set; }
-		public DbSet<Domain.PianoMentor.Course> Courses { get; set; }
-		public DbSet<Domain.PianoMentor.CourseItem> CourseItems { get; set; }
-		public DbSet<Domain.PianoMentor.CourseType> CourseTypes { get; set; }
-		public DbSet<Domain.PianoMentor.CourseUserProgress> CourseUserProgresses { get; set; }
-		public DbSet<Domain.PianoMentor.CourseItemUserProgress> CourseItemUserProgresses { get; set; }
-		public DbSet<Domain.PianoMentor.CourseItemProgressType> CourseItemProgressTypes { get; set; }
+		public DbSet<Course> Courses { get; set; }
+		public DbSet<CourseItem> CourseItems { get; set; }
+		public DbSet<CourseItemType> CourseItemTypes { get; set; }
+		public DbSet<CourseUserProgress> CourseUserProgresses { get; set; }
+		public DbSet<CourseItemUserProgress> CourseItemUserProgresses { get; set; }
+		public DbSet<CourseItemProgressType> CourseItemProgressTypes { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
@@ -86,7 +87,7 @@ namespace FileManager.DAL
 				e.Property(p => p.UrlEncryptedToken).IsUnicode(false).IsRequired();
 			});
 
-			builder.Entity<Domain.PianoMentor.Course>(e =>
+			builder.Entity<Course>(e =>
 			{
 				e.ToTable("Courses");
 
@@ -99,7 +100,7 @@ namespace FileManager.DAL
 				e.HasMany(p => p.CourseItems).WithOne(p => p.Course).OnDelete(DeleteBehavior.Cascade);
 			});
 
-			builder.Entity<Domain.PianoMentor.CourseItem>(e => 
+			builder.Entity<CourseItem>(e => 
 			{
 				e.ToTable("CourseItems");
 
@@ -109,24 +110,24 @@ namespace FileManager.DAL
 				e.Property(p => p.Position).IsRequired();
 
 				e.HasOne(p => p.Course).WithMany(p => p.CourseItems).HasForeignKey(p => p.CourseId).OnDelete(DeleteBehavior.Cascade);
-				e.HasOne(p => p.CourseType).WithMany().HasForeignKey(p => p.CourseTypeId).OnDelete(DeleteBehavior.NoAction);
+				e.HasOne(p => p.CourseItemType).WithMany().HasForeignKey(p => p.CourseTypeId).OnDelete(DeleteBehavior.NoAction);
 			});
 
-			builder.Entity<Domain.PianoMentor.CourseType>(e =>
+			builder.Entity<CourseItemType>(e =>
 			{
-				e.ToTable("CourseTypes");
+				e.ToTable("CourseItemTypes");
 
-				e.HasKey(p => p.CourseTypeId);
+				e.HasKey(p => p.CourseItemTypeId);
 
 				e.Property(p => p.Name).IsRequired().HasMaxLength(30);
 
-				foreach (var v in Enum.GetValues<CourseTypesEnumeration>())
+				foreach (var v in Enum.GetValues<CourseItemTypesEnumeration>())
 				{
-					e.HasData(new { CourseTypeId = (int)v, Name = v.ToString() });
+					e.HasData(new { CourseItemTypeId = (int)v, Name = v.ToString() });
 				}
 			});
 
-			builder.Entity<Domain.PianoMentor.CourseUserProgress>(e =>
+			builder.Entity<CourseUserProgress>(e =>
 			{
 				e.ToTable("UsersCoursesProgresses");
 
@@ -138,7 +139,7 @@ namespace FileManager.DAL
 				e.HasOne(p => p.Course).WithMany().HasForeignKey(p => p.CourseId).OnDelete(DeleteBehavior.Cascade);
 			});
 
-			builder.Entity<Domain.PianoMentor.CourseItemUserProgress>(e =>
+			builder.Entity<CourseItemUserProgress>(e =>
 			{
 				e.ToTable("UsersCoursesItemsProgresses");
 
@@ -149,7 +150,7 @@ namespace FileManager.DAL
 				e.HasOne(p => p.CourseItemProgressType).WithMany().HasForeignKey(p => p.CourseItemProgressTypeId).OnDelete(DeleteBehavior.NoAction);
 			});
 
-			builder.Entity<Domain.PianoMentor.CourseItemProgressType>(e =>
+			builder.Entity<CourseItemProgressType>(e =>
 			{
 				e.ToTable("CourseItemsProgressTypes");
 
@@ -186,7 +187,7 @@ namespace FileManager.DAL
 
 		private void ApplyPercentLimit()
 		{
-			foreach (var entry in ChangeTracker.Entries<Domain.PianoMentor.CourseUserProgress>())
+			foreach (var entry in ChangeTracker.Entries<CourseUserProgress>())
 			{
 				if (entry.State == EntityState.Added || entry.State == EntityState.Modified)
 				{

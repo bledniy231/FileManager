@@ -1,12 +1,12 @@
-﻿namespace FileManager.DAL.Domain.PianoMentor
+﻿namespace FileManager.Contract.Models.PianoMentor.Courses
 {
-	public class Course
+	public class CourseModel
 	{
 		public int CourseId { get; set; }
 		public int Position { get; set; }
 		public string Title { get; set; }
 		public string Subtitle { get; set; }
 		public string Description { get; set; }
-		public List<CourseItem> CourseItems { get; set; }
+		public int ProgressInPercent { get; set; }
 	}
 }
