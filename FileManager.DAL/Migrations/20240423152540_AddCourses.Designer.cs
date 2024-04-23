@@ -4,6 +4,7 @@ using FileManager.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FileManager.DAL.Migrations
 {
     [DbContext(typeof(FileManagerDbContext))]
-    partial class FileManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240423152540_AddCourses")]
+    partial class AddCourses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -151,11 +154,6 @@ namespace FileManager.DAL.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -270,74 +268,6 @@ namespace FileManager.DAL.Migrations
                     b.ToTable("CourseItems", "FileManager");
                 });
 
-            modelBuilder.Entity("FileManager.DAL.Domain.PianoMentor.CourseItemProgressType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CourseItemsProgressTypes", "FileManager");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "NotStarted"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "InProgress"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Completed"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Failed"
-                        });
-                });
-
-            modelBuilder.Entity("FileManager.DAL.Domain.PianoMentor.CourseItemUserProgress", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("CourseItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CourseItemProgressTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseItemId");
-
-                    b.HasIndex("CourseItemProgressTypeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UsersCoursesItemsProgresses", "FileManager");
-                });
-
             modelBuilder.Entity("FileManager.DAL.Domain.PianoMentor.CourseType", b =>
                 {
                     b.Property<int>("CourseTypeId")
@@ -359,7 +289,7 @@ namespace FileManager.DAL.Migrations
                         new
                         {
                             CourseTypeId = 1,
-                            Name = "Lecture"
+                            Name = "Lesson"
                         },
                         new
                         {
@@ -371,32 +301,6 @@ namespace FileManager.DAL.Migrations
                             CourseTypeId = 3,
                             Name = "Quiz"
                         });
-                });
-
-            modelBuilder.Entity("FileManager.DAL.Domain.PianoMentor.CourseUserProgress", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<long>("ProgressInPercent")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UsersCoursesProgresses", "FileManager");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<long>", b =>
@@ -593,52 +497,6 @@ namespace FileManager.DAL.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("CourseType");
-                });
-
-            modelBuilder.Entity("FileManager.DAL.Domain.PianoMentor.CourseItemUserProgress", b =>
-                {
-                    b.HasOne("FileManager.DAL.Domain.PianoMentor.CourseItem", "CourseItem")
-                        .WithMany()
-                        .HasForeignKey("CourseItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("FileManager.DAL.Domain.PianoMentor.CourseItemProgressType", "CourseItemProgressType")
-                        .WithMany()
-                        .HasForeignKey("CourseItemProgressTypeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("FileManager.DAL.Domain.Identity.FileManagerUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CourseItem");
-
-                    b.Navigation("CourseItemProgressType");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FileManager.DAL.Domain.PianoMentor.CourseUserProgress", b =>
-                {
-                    b.HasOne("FileManager.DAL.Domain.PianoMentor.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FileManager.DAL.Domain.Identity.FileManagerUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<long>", b =>

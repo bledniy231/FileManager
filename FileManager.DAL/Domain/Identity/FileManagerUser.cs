@@ -7,6 +7,7 @@ namespace FileManager.DAL.Domain.Identity
 		//public DateTime AccessTokenExpireTime { get; set; } = DateTime.MinValue;
 		public string? RefreshToken { get; set; }
 		public DateTime RefreshTokenExpireTime { get; set; }
+		public bool IsDeleted { get; set; }
 		public ICollection<DataSet.DataSet> DataSets { get; set; }
 	}
 }

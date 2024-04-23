@@ -3,13 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileManager", "FileManager\FileManager.csproj", "{36B14510-6A5A-4042-ABC6-B69BE1E419A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileManager", "FileManager\FileManager.csproj", "{36B14510-6A5A-4042-ABC6-B69BE1E419A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileManager.DAL", "FileManager.DAL\FileManager.DAL.csproj", "{57E9950D-BA90-47D4-87AB-04DA2DA237E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileManager.DAL", "FileManager.DAL\FileManager.DAL.csproj", "{57E9950D-BA90-47D4-87AB-04DA2DA237E5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C9D8C3FF-21D7-4B2C-832A-37FD0082828F} = {C9D8C3FF-21D7-4B2C-832A-37FD0082828F}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileManager.BLL", "FileManager.BLL\FileManager.BLL.csproj", "{50793721-B3D0-4AE0-9EF8-91FF356ED493}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileManager.BLL", "FileManager.BLL\FileManager.BLL.csproj", "{50793721-B3D0-4AE0-9EF8-91FF356ED493}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileManager.Contract", "FileManager.Contract\FileManager.Contract.csproj", "{C9D8C3FF-21D7-4B2C-832A-37FD0082828F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileManager.Contract", "FileManager.Contract\FileManager.Contract.csproj", "{C9D8C3FF-21D7-4B2C-832A-37FD0082828F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
