@@ -19,7 +19,6 @@ namespace FileManager.BLL.ApplicationUser
 			{
 				return new UserRegisterResponse
 				{
-					IsSuccess = false,
 					Errors = [$"Connot confirm password for {request.Email}"]
 				};
 			}
@@ -27,7 +26,7 @@ namespace FileManager.BLL.ApplicationUser
 			var user = new FileManagerUser
 			{
 				Email = request.Email,
-				UserName = request.Username
+				UserName = request.UserName
 			};
 
 			var identityResult = await _userManager.CreateAsync(user, request.Password);
@@ -36,7 +35,6 @@ namespace FileManager.BLL.ApplicationUser
 			{
 				return new UserRegisterResponse
 				{
-					IsSuccess = false,
 					Errors = identityResult.Errors.Select(er => er.Description).ToArray()
 				};
 			}
@@ -53,7 +51,6 @@ namespace FileManager.BLL.ApplicationUser
 
 					return new UserRegisterResponse
 					{
-						IsSuccess = false,
 						Errors = [$"Role {roleName} does not exists, registration failed"]
 					};
 				}
@@ -62,8 +59,7 @@ namespace FileManager.BLL.ApplicationUser
 			return new UserRegisterResponse
 			{
 				Email = request.Email,
-				Password = request.Password,
-				IsSuccess = true
+				Password = request.Password
 			};
 		}
 	}

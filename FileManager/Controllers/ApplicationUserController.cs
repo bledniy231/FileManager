@@ -1,4 +1,5 @@
 ﻿using Azure;
+using FileManager.Certificates;
 using FileManager.Contract.ApplicationUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,7 @@ namespace FileManager.Controllers
 		{
 			var userAuthResponse = await _mediator.Send(request);
 
-			if (!userAuthResponse.IsSuccess)
+			if (userAuthResponse.FailedMessage != null)
 			{
 				return BadRequest(userAuthResponse.FailedMessage);
 			}
@@ -35,7 +36,7 @@ namespace FileManager.Controllers
 		{
 			var userRegisterResponse = await _mediator.Send(request);
 			
-			if (!userRegisterResponse.IsSuccess)
+			if (!userRegisterResponse.Errors.IsNullOrEmpty())
 			{
 				return BadRequest(userRegisterResponse.Errors);
 			}
@@ -81,5 +82,32 @@ namespace FileManager.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<ActionResult> RevokeUsersInRole([FromQuery] string role)
 			=> Ok(await _mediator.Send(new RevokeUsersInRoleRequest(role)));
+
+		[Authorize]
+		[HttpPost]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<ActionResult> Logout()
+		{
+			await _mediator.Send(new LogoutUserRequest());
+
+			return NoContent();
+		}
+
+		[HttpGet]
+		public Task<IActionResult> CreateServerCertificate()
+		{
+			var serverCertificateManager = new FileManagerServerCertificateManager();
+			serverCertificateManager.Create();
+			return Task.FromResult<IActionResult>(Ok());
+		}
+
+		[HttpGet]
+		public Task<IActionResult> CreateClientCertificate()
+		{
+			var clientCertificateManager = new PianoMentorClientCertificateManager();
+			clientCertificateManager.Create();
+			return Task.FromResult<IActionResult>(Ok());
+		}
 	}
 }

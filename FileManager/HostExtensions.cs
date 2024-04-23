@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 namespace FileManager
 {
@@ -83,5 +87,30 @@ namespace FileManager
 			.AddDefaultTokenProviders()
 			.AddUserManager<UserManager<FileManagerUser>>()
 			.AddSignInManager<SignInManager<FileManagerUser>>();
+
+		public static void ConfigureCertificate(this IWebHostBuilder webBuilder)
+		{
+			var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
+			store.Open(OpenFlags.ReadOnly);
+			var certificate = store.Certificates.Where(c => c.FriendlyName.Equals("For project of Egor Seryakov's diploma")).FirstOrDefault()
+				?? throw new ArgumentException("Certificate not found");
+
+
+			webBuilder.UseKestrel(options =>
+			{
+				options.Listen(System.Net.IPAddress.Loopback, 44321, listenOptions =>
+				{
+					var connectionOptions = new HttpsConnectionAdapterOptions
+					{
+						ServerCertificate = certificate,
+						//ServerCertificateChain = new X509Certificate2Collection(certificate),
+						//ClientCertificateMode = ClientCertificateMode.AllowCertificate,
+						//ClientCertificateValidation = (certificate, chain, errors) => errors == SslPolicyErrors.None
+					};
+
+					listenOptions.UseHttps(connectionOptions);
+				});
+			});
+		}
 	}
 }

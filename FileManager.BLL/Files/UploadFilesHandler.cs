@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
+using System.Diagnostics;
 using System.Net;
 
 namespace FileManager.BLL.Files
@@ -97,17 +98,22 @@ namespace FileManager.BLL.Files
 							file.Directory.Create();
 						}
 
-						byte[] buffer = new byte[16 * 1024];
+						byte[] buffer = new byte[10 * 1024 * 1024];
 						int readBytes = 0;
 
 						using var targetStream = File.Create(file.FullName);
-
-						while ((readBytes = await section.Body.ReadAsync(buffer, cancellationToken)) > 0)
+						var stopWatch = new Stopwatch();
+						stopWatch.Start();
+						while ((readBytes = section.Body.ReadAtLeast(buffer, 2 * 1024 * 1024, false)) > 0)
+						//while ((readBytes = await section.Body.ReadAtLeastAsync(buffer, 10 * 1024 * 1024, false, cancellationToken).ConfigureAwait(false)) > 0)
 						{
-							await targetStream.WriteAsync(buffer.AsMemory(0, readBytes), cancellationToken);
+							//await targetStream.WriteAsync(buffer.AsMemory(0, readBytes), cancellationToken).ConfigureAwait(false);
+							targetStream.Write(buffer, 0, readBytes);
 							totalReadBytes += readBytes;
 							_percentageChecker.SetPercentage(request.UserId, (float)(totalReadBytes / section.Body.Length * 100.0));
 						}
+						stopWatch.Stop();
+						Console.WriteLine("=====================" + stopWatch.ElapsedMilliseconds);
 
 						totalReadBytes = 0;
 						_percentageChecker.IncreaseFilesCountAlreadyUploaded(request.UserId);
@@ -129,9 +135,9 @@ namespace FileManager.BLL.Files
 
 			if (fileIndex == _failedLoadFilesWithErrors.Count)
 			{
+				Directory.Delete(dataSet.GetDataSetDirectory(), true);
 				_dbContext.DataSets.Remove(dataSet);
 				await _dbContext.SaveChangesAsync(cancellationToken);
-				Directory.Delete(dataSet.GetDataSetDirectory());
 				_failedLoadFilesWithErrors.Add("All files failed to load");
 				return new DefaultResponse([.. _failedLoadFilesWithErrors]);
 			}

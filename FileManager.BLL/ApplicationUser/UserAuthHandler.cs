@@ -24,7 +24,6 @@ namespace FileManager.BLL.ApplicationUser
 			{
 				return new UserAuthResponse
 				{
-					IsSuccess = false,
 					FailedMessage = $"No accounts registered with {request.Email}"
 				};
 			}
@@ -33,14 +32,13 @@ namespace FileManager.BLL.ApplicationUser
 			{
 				return new UserAuthResponse
 				{
-					IsSuccess = false,
 					FailedMessage = $"Incorrect password for {request.Email}"
 				};
 			}
 
 			var roles = await _userManager.GetRolesAsync(managedUser);
 
-			string accessToken = _tokenService.CreateAccessToken(managedUser, roles);
+			var (accessToken, accessTokenExpiryDateTime) = _tokenService.CreateAccessToken(managedUser, roles);
 			managedUser.RefreshToken = _tokenService.CreateRefreshToken();
 			managedUser.RefreshTokenExpireTime = DateTime.UtcNow.AddDays(_config.GetSection("Jwt:RefreshTokenValidityInDays").Get<int>());
 
@@ -50,19 +48,20 @@ namespace FileManager.BLL.ApplicationUser
 			{
 				return new UserAuthResponse
 				{
-					IsSuccess = false,
 					FailedMessage = $"Cannot update user information for {request.Email}"
 				};
 			}
 
+
+
 			return new UserAuthResponse
 			{
-				IsSuccess = true,
 				AccessToken = accessToken,
+				AccessTokenExpiryUtc = accessTokenExpiryDateTime,
 				RefreshToken = managedUser.RefreshToken,
 				UserName = managedUser.UserName,
 				Roles = roles,
-				Id = managedUser.Id,
+				UserId = managedUser.Id,
 				Email = request.Email
 			};
 		}

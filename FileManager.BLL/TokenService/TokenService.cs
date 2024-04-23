@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -7,21 +11,27 @@ using System.Text;
 
 namespace FileManager.BLL.TokenService
 {
-	public class TokenService(IConfiguration config) : ITokenService
+	public class TokenService(
+		IConfiguration config,
+		IDistributedCache cache,
+		IHttpContextAccessor httpContextAccessor) : ITokenService
 	{
 		private readonly IConfiguration _config = config;
+		private readonly IDistributedCache _cache = cache;
+		private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-		public string CreateAccessToken(DAL.Domain.Identity.FileManagerUser user, IEnumerable<string> userRoles)
+		public (string token, DateTime accessTokenExpiry) CreateAccessToken(DAL.Domain.Identity.FileManagerUser user, IEnumerable<string> userRoles)
 		{
-			var token = CreateJwtToken(user, userRoles);
+			var (token, accessTokenExpiry) = CreateJwtToken(user, userRoles);
 			var tokenHandler = new JwtSecurityTokenHandler();
-			return tokenHandler.WriteToken(token);
+			return (tokenHandler.WriteToken(token), accessTokenExpiry);
 		}
 
-		private JwtSecurityToken CreateJwtToken(DAL.Domain.Identity.FileManagerUser user, IEnumerable<string> userRoles)
+		private (JwtSecurityToken token, DateTime accessTokenExpiry) CreateJwtToken(DAL.Domain.Identity.FileManagerUser user, IEnumerable<string> userRoles)
 		{
 			var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]!));
 			int expirationTimeInMin = _config.GetSection("Jwt:Expire").Get<int>();
+			var expiryDateTime = DateTime.UtcNow.AddMinutes(expirationTimeInMin);
 			var claims = new List<Claim> 
 			{
 				new (ClaimTypes.Email, user.Email),
@@ -30,12 +40,13 @@ namespace FileManager.BLL.TokenService
 				new (ClaimTypes.Role, userRoles.Aggregate((ur1, ur2) => ur1 + ' ' + ur2))
 			};
 
-			return new JwtSecurityToken(
+			return (new JwtSecurityToken(
 				_config["Jwt:Issuer"],
 				_config["Jwt:Audience"],
 				claims: claims,
-				expires: DateTime.UtcNow.AddMinutes(expirationTimeInMin),
-				signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256));
+				expires: expiryDateTime,
+				signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)),
+				expiryDateTime);
 		}
 
 		public string CreateRefreshToken()
@@ -70,5 +81,38 @@ namespace FileManager.BLL.TokenService
 
 			return principal;
 		}
+
+		public bool IsCurrentUserActiveToken()
+			=> IsActiveUserToken(GetCurrentUserToken());
+
+		public void DeactivateCurrentUserToken()
+			=> DeactivateUserToken(GetCurrentUserToken());
+
+		public bool IsActiveUserToken(string token)
+			=> _cache.GetString(GetCacheKey(token)) == null;
+
+		public void DeactivateUserToken(string token)
+			=> _cache.SetString(GetCacheKey(token),
+				" ", new DistributedCacheEntryOptions
+				{
+					AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_config.GetSection("Jwt:Expire").Get<int>())
+				});
+
+		private string GetCurrentUserToken()
+		{
+			var authorizationHeader = _httpContextAccessor.HttpContext?.Request.Headers.Authorization;
+
+			if (!authorizationHeader.HasValue)
+			{
+				return string.Empty;
+			}
+
+			return authorizationHeader.Value == StringValues.Empty
+				? string.Empty
+				: authorizationHeader.Value.Single().Split(" ").Last();
+		}
+
+		private static string GetCacheKey(string token)
+			=> $"tokens:{token}:deactivated";
 	}
 }

@@ -18,7 +18,13 @@
 		}
 
 		public static string GetDataSetDirectory(this DAL.Domain.DataSet.DataSet dataSet)
-			=> Path.GetDirectoryName(dataSet.Binaries.First().GetInternalFile().FullName) 
-				?? throw new ArgumentException("Cannot find file directory");
+		{
+			string path = Path.Combine(dataSet.Storage.BasePath,
+				(dataSet.Id / 1000 / 1000).ToString("d3"),
+				(dataSet.Id / 1000 % 1000).ToString("d3"),
+				(dataSet.Id % 1000).ToString("d3"));
+
+			return path;
+		}
 	}
 }

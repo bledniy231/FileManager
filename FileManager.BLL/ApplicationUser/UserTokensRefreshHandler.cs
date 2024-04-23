@@ -49,7 +49,7 @@ namespace FileManager.BLL.ApplicationUser
 			}
 
 			var userRoles = await _userManager.GetRolesAsync(user);
-			var newAccessToken = _tokenService.CreateAccessToken(user, userRoles);
+			var (newAccessToken, newAccessTokenExpiryDateTime) = _tokenService.CreateAccessToken(user, userRoles);
 			string newRefreshToken = _tokenService.CreateRefreshToken();
 			user.RefreshToken = newRefreshToken;
 

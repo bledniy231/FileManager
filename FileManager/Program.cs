@@ -4,8 +4,10 @@ using FileManager.BLL.MultipartRequestHelper;
 using FileManager.BLL.TokenService;
 using FileManager.BLL.UploadPercentageChecker;
 using FileManager.DAL;
+using FileManager.Middleware;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Reflection;
 
@@ -17,10 +19,15 @@ namespace FileManager
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
+			//builder.WebHost.ConfigureCertificate();
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGenWithBearerAuthentication();
 
+			builder.Services.AddStackExchangeRedisCache(options => {
+				options.Configuration = "localhost";
+				options.InstanceName = "local_FileManager";
+			});
 			builder.Services.ConfigureDbContext(builder.Configuration);
 			builder.Services.ConfigureBLL();
 			builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
@@ -29,10 +36,12 @@ namespace FileManager
 			builder.Services.AddBearerAuthorization();
 			builder.Services.AddApplicationIdentity();
 
-			builder.Services.AddSingleton<ITokenService, TokenService>();
+			builder.Services.AddTransient<TokenServiceMiddleware>();
+			builder.Services.AddTransient<ITokenService, TokenService>();
 			builder.Services.AddSingleton<IMultipartRequestHelper, MultipartRequestHelper>();
 			builder.Services.AddSingleton<ICryptoLinkManager, CryptoLinkManagerViaAes>();
 			builder.Services.AddSingleton<IPercentageChecker, PercentageChecker>();
+			builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			builder.Services.TryAddSingleton<FormOptions>();
 
 			builder.Services.Configure<FormOptions>(options =>
@@ -45,11 +54,14 @@ namespace FileManager
 			builder.Services.Configure<IISServerOptions>(options =>
 			{
 				options.MaxRequestBodySize = 524288000;
+				options.AllowSynchronousIO = true;
 			});
 
 			builder.Services.Configure<KestrelServerOptions>(options =>
 			{
 				options.Limits.MaxRequestBodySize = int.MaxValue;
+				options.AllowSynchronousIO = true;
+				//options.ConfigureHttpsDefaults(opt => opt.ClientCertificateMode = ClientCertificateMode.RequireCertificate);
 			});
 
 			var app = builder.Build();
@@ -65,6 +77,7 @@ namespace FileManager
 			app.UseHttpsRedirection();
 
 			app.UseAuthentication();
+			app.UseMiddleware<TokenServiceMiddleware>();
 			app.UseAuthorization();
 
 			app.MapControllers();
