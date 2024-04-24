@@ -164,38 +164,26 @@ namespace FileManager.Controllers
 
 			return fsResult;
 		}
-		
+
 
 		private bool CheckUserPermissions(long userId)
 		{
-			string? userIdFromClaims = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-			if (userIdFromClaims != null && long.TryParse(userIdFromClaims, out long parsedUserId))
-			{
-				var userRoles = User.FindFirstValue(ClaimTypes.Role)?.Split(' ');
-				if (parsedUserId != userId && userRoles != null && !userRoles.Contains("Admin"))
-				{
-					return false;
-				}
-
-				return true;
-			}
-			else
+			var userIdFromClaims = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (string.IsNullOrEmpty(userIdFromClaims) || !long.TryParse(userIdFromClaims, out long parsedUserId))
 			{
 				return false;
 			}
+
+			var userRoles = User.FindFirstValue(ClaimTypes.Role)?.Split(' ');
+			return parsedUserId == userId || userRoles?.Contains("Admin") == true;
 		}
+
 
 		private bool IdentifyUser(long userId)
 		{
 			string? userIdFromClaims = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-			if (userIdFromClaims == null || !long.TryParse(userIdFromClaims, out long parsedUserId) || parsedUserId != userId)
-			{
-				return false;
-			}
-
-			return true;
+			return userIdFromClaims != null && long.TryParse(userIdFromClaims, out long parsedUserId) && parsedUserId == userId;
 		}
 	}
 }

@@ -95,7 +95,7 @@ namespace FileManager.DAL
 
 				e.Property(p => p.Title).IsRequired().HasMaxLength(30);
 				e.Property(p => p.Subtitle).IsRequired().HasMaxLength(40);
-				e.Property(p => p.Description).IsRequired().HasMaxLength(150);
+				e.Property(p => p.Description).IsRequired().HasMaxLength(255);
 
 				e.HasMany(p => p.CourseItems).WithOne(p => p.Course).OnDelete(DeleteBehavior.Cascade);
 			});
