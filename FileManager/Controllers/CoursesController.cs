@@ -1,5 +1,8 @@
 ﻿using FileManager.Contract.Courses;
+using FileManager.Contract.Default;
+using FileManager.DAL.Domain.PianoMentor.Courses;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -7,37 +10,38 @@ namespace FileManager.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]/[action]")]
-	public class CoursesController(IMediator mediator) : ControllerBase
+	public class CoursesController(IMediator mediator, ControllersHelper controllersHelper) : ControllerBase
 	{
 		private readonly IMediator _mediator = mediator;
+		private readonly ControllersHelper _controllersHelper = controllersHelper;
 
 		[HttpGet]	
-		public async Task<IActionResult> GetCourses([FromQuery] GetCoursesRequest? request = null)
+		public async Task<IActionResult> GetCourses([FromQuery] long userId)
 		{
-			if (request != null && !IdentifyUser(request.UserId))
-			{
-				return Unauthorized();
-			}
-
-			return Ok(await _mediator.Send(request ?? new GetCoursesRequest()));
+			return await _controllersHelper.SendRequet<GetCoursesRequest, GetCoursesResponse>(new GetCoursesRequest { UserId = userId });
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetCourseItems([FromQuery] GetCourseItemsRequest request)
+		public async Task<IActionResult> GetCourseItems([FromQuery] long userId, [FromQuery] int courseId)
 		{
-			if (!IdentifyUser(request.UserId))
+			if (courseId <= 0)
 			{
-				return Unauthorized();
+				return BadRequest("Course id cannot be less or equals zero");
 			}
 
-			return Ok(await _mediator.Send(request));
+			return await _controllersHelper.SendRequet<GetCourseItemsRequest, GetCourseItemsResponse>(new GetCourseItemsRequest { UserId = userId, CourseId = courseId });
 		}
 
-		private bool IdentifyUser(long userId)
+		[HttpPost]
+		[Authorize]
+		public async Task<IActionResult> SetCourseViaAdmin([FromBody] SetNewCoursesViaAdminRequest request)
 		{
-			string? userIdFromClaims = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (!_controllersHelper.CheckUserPermissions(User, request.UserId))
+			{
+				return Unauthorized("Wrong user id");
+			}
 
-			return userIdFromClaims != null && long.TryParse(userIdFromClaims, out long parsedUserId) && parsedUserId == userId;
+			return await _controllersHelper.SendRequet<SetNewCoursesViaAdminRequest, DefaultResponse>(request);
 		}
 	}
 }

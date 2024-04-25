@@ -8,5 +8,6 @@
 		public string Subtitle { get; set; }
 		public string Description { get; set; }
 		public int ProgressInPercent { get; set; }
+		public List<CourseItemModel> CourseItemModels { get; set; }
 	}
 }

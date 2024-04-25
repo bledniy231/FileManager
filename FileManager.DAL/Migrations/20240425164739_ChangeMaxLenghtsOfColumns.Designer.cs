@@ -4,6 +4,7 @@ using FileManager.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FileManager.DAL.Migrations
 {
     [DbContext(typeof(FileManagerDbContext))]
-    partial class FileManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240425164739_ChangeMaxLenghtsOfColumns")]
+    partial class ChangeMaxLenghtsOfColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -250,7 +253,7 @@ namespace FileManager.DAL.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CourseItemTypeId")
+                    b.Property<int>("CourseTypeId")
                         .HasColumnType("int");
 
                     b.Property<int>("Position")
@@ -265,7 +268,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.HasIndex("CourseItemTypeId");
+                    b.HasIndex("CourseTypeId");
 
                     b.ToTable("CourseItems", "FileManager");
                 });
@@ -586,7 +589,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasOne("FileManager.DAL.Domain.PianoMentor.Courses.CourseItemType", "CourseItemType")
                         .WithMany()
-                        .HasForeignKey("CourseItemTypeId")
+                        .HasForeignKey("CourseTypeId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 

@@ -1,4 +1,5 @@
 ﻿using FileManager.Attributes;
+using FileManager.Contract.Default;
 using FileManager.Contract.Files;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -10,10 +11,10 @@ namespace FileManager.Controllers
 {
 	[Route("api/[controller]/[action]")]
 	[ApiController]
-	public class FilesController(IMediator mediator) : ControllerBase
+	public class FilesController(ControllersHelper controllersHelper) : ControllerBase
 	{
-		private readonly IMediator _mediator = mediator;
-
+		private readonly ControllersHelper _controllersHelper = controllersHelper;
+		IMediator _mediator;
 		[HttpPost]
 		[Authorize]
 		[Consumes("multipart/form-data")]
@@ -21,44 +22,30 @@ namespace FileManager.Controllers
 		[DisableFormValueModelBinding]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult> UploadFiles([FromQuery] long userId)
+		public async Task<IActionResult> UploadFiles([FromQuery] long userId)
 		{
-			if (!IdentifyUser(userId))
+			if (!_controllersHelper.IdentifyUser(User, userId))
 			{
-				return BadRequest("Wrong user id");
+				return Unauthorized("Wrong user id");
 			}
 
 			var request = new UploadFilesRequest(userId, Request.ContentType, Request.Body);
-			var response = await _mediator.Send(request);
-
-			if (!response.Errors.IsNullOrEmpty())
-			{
-				return BadRequest(response.Errors);
-			}
-
-			return Ok();
+			return await _controllersHelper.SendRequet<UploadFilesRequest, DefaultResponse>(request);
 		}
 
 		[HttpGet]
 		[Authorize]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult<GetListOfUploadedFilesResponse>> GetListOfUploadedFiles([FromQuery] long userId)
+		public async Task<IActionResult> GetListOfUploadedFiles([FromQuery] long userId)
 		{
-			if (!CheckUserPermissions(userId))
+			if (!_controllersHelper.CheckUserPermissions(User, userId))
 			{
-				return BadRequest("Wrong user id");
+				return Unauthorized("Wrong user id");
 			}
 
 			var request = new GetListOfUploadedFilesRequest(userId);
-			var response = await _mediator.Send(request);
-
-			if (!response.Errors.IsNullOrEmpty())
-			{
-				return BadRequest(response.Errors);
-			}
-
-			return Ok(response);
+			return await _controllersHelper.SendRequet<GetListOfUploadedFilesRequest, GetListOfUploadedFilesResponse>(request);
 		}
 
 		/// <summary>
@@ -72,11 +59,11 @@ namespace FileManager.Controllers
 		[Authorize]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult> DownloadFiles([FromQuery] long userId, [FromQuery] long dataSetId, [FromQuery] int? dataId)
+		public async Task<IActionResult> DownloadFiles([FromQuery] long userId, [FromQuery] long dataSetId, [FromQuery] int? dataId)
 		{
-			if (!CheckUserPermissions(userId))
+			if (!_controllersHelper.CheckUserPermissions(User, userId))
 			{
-				return BadRequest("Wrong user id");
+				return Unauthorized("Wrong user id");
 			}
 
 			var request = new DownloadFilesRequest(dataSetId, dataId);
@@ -100,9 +87,9 @@ namespace FileManager.Controllers
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult<(int FilesCountAlreadyUploaded, float PercentageCurrentFile)?>> CheckFilesUploadStatus([FromQuery] long userId)
 		{
-			if (!IdentifyUser(userId))
+			if (!_controllersHelper.IdentifyUser(User, userId))
 			{
-				return BadRequest("Wrong user id");
+				return Unauthorized("Wrong user id");
 			}
 
 			var response = await _mediator.Send(new CheckFilesUploadStatusRequest(userId));
@@ -114,19 +101,18 @@ namespace FileManager.Controllers
 		[Authorize]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult<EncryptOneTimeLinkResponse>> CreateOneTimeDownloadLink([FromQuery] long userId, [FromQuery] long dataSetId, [FromQuery] int? dataId)
+		public async Task<IActionResult> CreateOneTimeDownloadLink([FromQuery] long userId, [FromQuery] long dataSetId, [FromQuery] int? dataId)
 		{
-			if (!CheckUserPermissions(userId))
+			if (!_controllersHelper.CheckUserPermissions(User, userId))
 			{
-				return BadRequest("Wrong user id");
+				return Unauthorized("Wrong user id");
 			}
 
 			var request = new EncryptOneTimeLinkRequest(dataSetId, dataId);
 
 			try
 			{
-				var response = await _mediator.Send(request);
-				return response;
+				return await _controllersHelper.SendRequet<EncryptOneTimeLinkRequest, EncryptOneTimeLinkResponse>(request);
 			}
 			catch (Exception ex)
 			{
@@ -150,7 +136,7 @@ namespace FileManager.Controllers
 
 			var downloadResponse = await _mediator.Send(new DownloadFilesRequest(decryptResponse.DataSetId, decryptResponse.DataId));
 
-			if (downloadResponse.Errors != null)
+			if (!downloadResponse.Errors.IsNullOrEmpty())
 			{
 				return BadRequest(downloadResponse.Errors);
 			}
@@ -163,27 +149,6 @@ namespace FileManager.Controllers
 			await _mediator.Send(new DeleteOneTimeLinkFromDbRequest(token));
 
 			return fsResult;
-		}
-
-
-		private bool CheckUserPermissions(long userId)
-		{
-			var userIdFromClaims = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			if (string.IsNullOrEmpty(userIdFromClaims) || !long.TryParse(userIdFromClaims, out long parsedUserId))
-			{
-				return false;
-			}
-
-			var userRoles = User.FindFirstValue(ClaimTypes.Role)?.Split(' ');
-			return parsedUserId == userId || userRoles?.Contains("Admin") == true;
-		}
-
-
-		private bool IdentifyUser(long userId)
-		{
-			string? userIdFromClaims = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-			return userIdFromClaims != null && long.TryParse(userIdFromClaims, out long parsedUserId) && parsedUserId == userId;
 		}
 	}
 }

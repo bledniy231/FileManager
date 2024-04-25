@@ -93,8 +93,8 @@ namespace FileManager.DAL
 
 				e.HasKey(p => p.CourseId);
 
-				e.Property(p => p.Title).IsRequired().HasMaxLength(30);
-				e.Property(p => p.Subtitle).IsRequired().HasMaxLength(40);
+				e.Property(p => p.Title).IsRequired().HasMaxLength(100);
+				e.Property(p => p.Subtitle).IsRequired().HasMaxLength(100);
 				e.Property(p => p.Description).IsRequired().HasMaxLength(255);
 
 				e.HasMany(p => p.CourseItems).WithOne(p => p.Course).OnDelete(DeleteBehavior.Cascade);
@@ -106,11 +106,11 @@ namespace FileManager.DAL
 
 				e.HasKey(p => p.CourseItemId);
 
-				e.Property(p => p.Title).IsRequired().HasMaxLength(30);
+				e.Property(p => p.Title).IsRequired().HasMaxLength(100);
 				e.Property(p => p.Position).IsRequired();
 
 				e.HasOne(p => p.Course).WithMany(p => p.CourseItems).HasForeignKey(p => p.CourseId).OnDelete(DeleteBehavior.Cascade);
-				e.HasOne(p => p.CourseItemType).WithMany().HasForeignKey(p => p.CourseTypeId).OnDelete(DeleteBehavior.NoAction);
+				e.HasOne(p => p.CourseItemType).WithMany().HasForeignKey(p => p.CourseItemTypeId).OnDelete(DeleteBehavior.NoAction);
 			});
 
 			builder.Entity<CourseItemType>(e =>

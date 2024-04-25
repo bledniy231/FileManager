@@ -3,6 +3,7 @@ using FileManager.BLL.CryptoLinkManager;
 using FileManager.BLL.MultipartRequestHelper;
 using FileManager.BLL.TokenService;
 using FileManager.BLL.UploadPercentageChecker;
+using FileManager.Controllers;
 using FileManager.DAL;
 using FileManager.Middleware;
 using Microsoft.AspNetCore.Http.Features;
@@ -42,6 +43,7 @@ namespace FileManager
 			builder.Services.AddSingleton<ICryptoLinkManager, CryptoLinkManagerViaAes>();
 			builder.Services.AddSingleton<IPercentageChecker, PercentageChecker>();
 			builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			builder.Services.AddSingleton<ControllersHelper>();
 			builder.Services.TryAddSingleton<FormOptions>();
 
 			builder.Services.Configure<FormOptions>(options =>
