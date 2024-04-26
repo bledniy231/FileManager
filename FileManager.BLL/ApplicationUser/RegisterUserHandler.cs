@@ -5,19 +5,19 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FileManager.BLL.ApplicationUser
 {
-	internal class UserRegisterHandler(
+	internal class RegisterUserHandler(
 		UserManager<FileManagerUser> userManager,
 		RoleManager<IdentityRole<long>> roleManager) 
-		: IRequestHandler<UserRegisterRequest, UserRegisterResponse>
+		: IRequestHandler<RegisterUserRequest, RegisterUserResponse>
 	{
 		private readonly UserManager<FileManagerUser> _userManager = userManager;
 		private readonly RoleManager<IdentityRole<long>> _roleManager = roleManager;
 
-		public async Task<UserRegisterResponse> Handle(UserRegisterRequest request, CancellationToken cancellationToken)
+		public async Task<RegisterUserResponse> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
 		{
 			if (!request.Password.Equals(request.PasswordConfirm))
 			{
-				return new UserRegisterResponse
+				return new RegisterUserResponse
 				{
 					Errors = [$"Connot confirm password for {request.Email}"]
 				};
@@ -33,7 +33,7 @@ namespace FileManager.BLL.ApplicationUser
 
 			if (!identityResult.Succeeded)
 			{
-				return new UserRegisterResponse
+				return new RegisterUserResponse
 				{
 					Errors = identityResult.Errors.Select(er => er.Description).ToArray()
 				};
@@ -49,14 +49,14 @@ namespace FileManager.BLL.ApplicationUser
 				{
 					await _userManager.DeleteAsync(user);
 
-					return new UserRegisterResponse
+					return new RegisterUserResponse
 					{
 						Errors = [$"Role {roleName} does not exists, registration failed"]
 					};
 				}
 			}
 
-			return new UserRegisterResponse
+			return new RegisterUserResponse
 			{
 				Email = request.Email,
 				Password = request.Password

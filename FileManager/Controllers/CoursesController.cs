@@ -10,9 +10,8 @@ namespace FileManager.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]/[action]")]
-	public class CoursesController(IMediator mediator, ControllersHelper controllersHelper) : ControllerBase
+	public class CoursesController(ControllersHelper controllersHelper) : ControllerBase
 	{
-		private readonly IMediator _mediator = mediator;
 		private readonly ControllersHelper _controllersHelper = controllersHelper;
 
 		[HttpGet]	

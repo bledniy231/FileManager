@@ -1,10 +1,13 @@
 ﻿using Azure;
 using FileManager.Certificates;
 using FileManager.Contract.ApplicationUser;
+using FileManager.Contract.Models.JwtTokens;
+using FileManager.Contract.Tokens;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace FileManager.Controllers
 {
@@ -17,7 +20,7 @@ namespace FileManager.Controllers
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult<UserAuthResponse>> Login([FromBody] UserAuthRequest request)
+		public async Task<ActionResult<AuthUserResponse>> Login([FromBody] AuthUserRequest request)
 		{
 			var userAuthResponse = await _mediator.Send(request);
 
@@ -32,7 +35,7 @@ namespace FileManager.Controllers
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult<UserAuthResponse>> Register([FromBody] UserRegisterRequest request)
+		public async Task<ActionResult<AuthUserResponse>> Register([FromBody] RegisterUserRequest request)
 		{
 			var userRegisterResponse = await _mediator.Send(request);
 			
@@ -41,20 +44,20 @@ namespace FileManager.Controllers
 				return BadRequest(userRegisterResponse.Errors);
 			}
 			
-			return await Login(new UserAuthRequest(userRegisterResponse.Email, userRegisterResponse.Password));
+			return await Login(new AuthUserRequest(userRegisterResponse.Email, userRegisterResponse.Password));
 		}
 
 		[Authorize]
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult<UserTokensRefreshResponse>> RefreshUserTokens([FromBody] UserTokensRefreshRequest request)
+		public async Task<ActionResult<RefreshUserTokensResponse>> RefreshUserTokens([FromBody] RefreshUserTokensRequest request)
 		{
 			var userRefreshResponse = await _mediator.Send(request);
 
-			if (!userRefreshResponse.IsSuccess)
+			if (!userRefreshResponse.Errors.IsNullOrEmpty())
 			{
-				return BadRequest(userRefreshResponse.Message);
+				return BadRequest(userRefreshResponse.Errors);
 			}
 
 			return Ok(userRefreshResponse);

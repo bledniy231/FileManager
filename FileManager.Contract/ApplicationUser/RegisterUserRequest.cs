@@ -2,7 +2,7 @@
 
 namespace FileManager.Contract.ApplicationUser
 {
-	public class UserRegisterRequest : IRequest<UserRegisterResponse>
+	public class RegisterUserRequest : IRequest<RegisterUserResponse>
 	{
 		public string UserName { get; set; }
 		public string Email { get; set; }

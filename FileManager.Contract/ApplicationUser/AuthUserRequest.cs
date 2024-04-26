@@ -2,7 +2,7 @@
 
 namespace FileManager.Contract.ApplicationUser
 {
-	public class UserAuthRequest(string email, string password) : IRequest<UserAuthResponse>
+	public class AuthUserRequest(string email, string password) : IRequest<AuthUserResponse>
 	{
 		public string Email { get; set; } = email;
 		public string Password { get; set; } = password;

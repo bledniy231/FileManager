@@ -33,7 +33,6 @@ namespace FileManager.BLL.Couses
 
 				var courseItems = _dbContext.CourseItems
 					.AsNoTracking()
-					.Include(ci => ci.CourseItemType)
 					.Where(ci => ci.CourseId == request.CourseId)
 					.Select(ci => new
 					{

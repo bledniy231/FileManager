@@ -7,22 +7,22 @@ using Microsoft.Extensions.Configuration;
 
 namespace FileManager.BLL.ApplicationUser
 {
-	internal class UserAuthHandler(
+	internal class AuthUserHandler(
 		UserManager<FileManagerUser> userManager,
 		ITokenService tokenService,
 		IConfiguration config) 
-		: IRequestHandler<UserAuthRequest, UserAuthResponse>
+		: IRequestHandler<AuthUserRequest, AuthUserResponse>
 	{
 		private readonly UserManager<FileManagerUser> _userManager = userManager;
 		private readonly ITokenService _tokenService = tokenService;
 		private readonly IConfiguration _config = config;
 
-		public async Task<UserAuthResponse> Handle(UserAuthRequest request, CancellationToken cancellationToken)
+		public async Task<AuthUserResponse> Handle(AuthUserRequest request, CancellationToken cancellationToken)
 		{
 			var managedUser = await _userManager.FindByEmailAsync(request.Email);
 			if (managedUser == null)
 			{
-				return new UserAuthResponse
+				return new AuthUserResponse
 				{
 					FailedMessage = $"No accounts registered with {request.Email}"
 				};
@@ -30,7 +30,7 @@ namespace FileManager.BLL.ApplicationUser
 
 			if (!await _userManager.CheckPasswordAsync(managedUser, request.Password))
 			{
-				return new UserAuthResponse
+				return new AuthUserResponse
 				{
 					FailedMessage = $"Incorrect password for {request.Email}"
 				};
@@ -46,19 +46,22 @@ namespace FileManager.BLL.ApplicationUser
 
 			if (!updatingResult.Succeeded)
 			{
-				return new UserAuthResponse
+				return new AuthUserResponse
 				{
 					FailedMessage = $"Cannot update user information for {request.Email}"
 				};
 			}
 
 
-
-			return new UserAuthResponse
+			return new AuthUserResponse
 			{
-				AccessToken = accessToken,
-				AccessTokenExpiryUtc = accessTokenExpiryDateTime,
-				RefreshToken = managedUser.RefreshToken,
+				JwtTokensModel = new Contract.Models.JwtTokens.JwtTokensModel
+				{
+					AccessToken = accessToken,
+					AccessTokenExpireTime = accessTokenExpiryDateTime,
+					RefreshToken = managedUser.RefreshToken,
+					RefreshTokenExpireTime = managedUser.RefreshTokenExpireTime
+				},
 				UserName = managedUser.UserName,
 				Roles = roles,
 				UserId = managedUser.Id,
