@@ -1,4 +1,5 @@
-﻿using FileManager.Attributes;
+﻿using Azure.Core;
+using FileManager.Attributes;
 using FileManager.Contract.Courses;
 using FileManager.Contract.Default;
 using FileManager.Contract.Files;
@@ -92,7 +93,17 @@ namespace FileManager.Controllers
 			}
 
 			var downloadRequest = new DownloadLecturePdfRequest(courseItemId);
-			return await _controllersHelper.SendRequet<DownloadLecturePdfRequest, DownloadFilesResponse>(downloadRequest);
+			var response = await _mediator.Send(downloadRequest);
+
+			if (response.Errors != null && response.Errors.Length > 0)
+			{
+				return BadRequest(response.Errors);
+			}
+
+			return new FileStreamResult(response.FileStream, response.ContentType)
+			{
+				FileDownloadName = response.FileDownloadName
+			};
 		}
 	}
 }

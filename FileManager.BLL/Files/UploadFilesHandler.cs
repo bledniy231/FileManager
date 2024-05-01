@@ -173,7 +173,7 @@ namespace FileManager.BLL.Files
 									buffer[2] != 0x44 || // D
 									buffer[3] != 0x46)   // F
 								{
-									_failedLoadFilesWithErrors.Add($"File index: {fileIndex}, Error: File is not a PDF");
+									_failedLoadFilesWithErrors.Add($"File name: {file.Name}, Error: File is not a PDF");
 									break;
 								}
 							}

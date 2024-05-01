@@ -2,8 +2,8 @@
 using FileManager.Contract.Files;
 using FileManager.DAL;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Data.Entity;
 
 namespace FileManager.BLL.Couses
 {
@@ -24,14 +24,16 @@ namespace FileManager.BLL.Couses
 
 			var courseAttach = await _dbContext.CourseItems
 				.AsNoTracking()
+				.Include(ci => ci.AttachedDataSet)
+				.Include(ci => ci.AttachedDataSet.Storage)
+				.Include(ci => ci.AttachedDataSet.Binaries)
 				.Where(ci => 
 					ci.CourseItemId == request.CourseItemId 
 					&& !ci.AttachedDataSet.IsDraft
 					&& !ci.IsDeleted)
 				.Select(ci => new
 				{
-					ci.AttachedDataSet,
-					ci.AttachedDataSet.Binaries
+					ci.AttachedDataSet
 				})
 				.FirstOrDefaultAsync(cancellationToken);
 
@@ -40,11 +42,12 @@ namespace FileManager.BLL.Couses
 				return new DownloadFilesResponse(null, null, null, [$"Cannot find a course item attachement"]);
 			}
 
-			if (courseAttach.Binaries == null)
+			if (courseAttach.AttachedDataSet == null || courseAttach.AttachedDataSet.Binaries == null || courseAttach.AttachedDataSet.Storage == null)
 			{
 				return new DownloadFilesResponse(null, null, null, [$"Cannot find a binary in DB for course item'"]);
 			}
-			var binary = courseAttach.Binaries.FirstOrDefault();
+
+			var binary = courseAttach.AttachedDataSet.Binaries.FirstOrDefault();
 			var file = binary?.GetInternalFile();
 			if (file == null || !file.Exists)
 			{
