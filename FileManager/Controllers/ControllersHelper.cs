@@ -10,6 +10,14 @@ namespace FileManager.Controllers
 	{
 		private readonly IServiceProvider _serviceProvider = serviceProvider;
 
+		public bool IsUserAdmin(ClaimsPrincipal user, out long userId)
+		{
+			var userRoles = user.FindFirstValue(ClaimTypes.Role)?.Split(' ');
+			string? userIdFromClaims = user.FindFirstValue(ClaimTypes.NameIdentifier);
+			
+			return long.TryParse(userIdFromClaims, out userId) && userRoles?.Contains("Admin") == true;
+		}
+
 		public bool CheckUserPermissions(ClaimsPrincipal user, long userId)
 		{
 			var userIdFromClaims = user.FindFirstValue(ClaimTypes.NameIdentifier);

@@ -1,13 +1,9 @@
-﻿using Azure;
-using FileManager.Certificates;
+﻿using FileManager.Certificates;
 using FileManager.Contract.ApplicationUser;
-using FileManager.Contract.Models.JwtTokens;
-using FileManager.Contract.Tokens;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace FileManager.Controllers
 {

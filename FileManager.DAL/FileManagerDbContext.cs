@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using FileManager.Contract.Models.PianoMentor.Courses;
 using FileManager.DAL.Domain.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System.Timers;
-using System.Reflection;
 using FileManager.DAL.Domain.PianoMentor.Courses;
-using FileManager.Contract.Models.PianoMentor.Courses;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileManager.DAL
 {
-    public class FileManagerDbContext(
+	public class FileManagerDbContext(
 		DbContextOptions<FileManagerDbContext> options) 
 		: IdentityDbContext<FileManagerUser, IdentityRole<long>, long>(options)
 	{
@@ -96,6 +94,8 @@ namespace FileManager.DAL
 				e.Property(p => p.Title).IsRequired().HasMaxLength(100);
 				e.Property(p => p.Subtitle).IsRequired().HasMaxLength(100);
 				e.Property(p => p.Description).IsRequired().HasMaxLength(255);
+				e.Property(p => p.UpdatedAt).IsRequired();
+				e.Property(p => p.IsDeleted).HasDefaultValue(false);
 
 				e.HasMany(p => p.CourseItems).WithOne(p => p.Course).OnDelete(DeleteBehavior.Cascade);
 			});
@@ -108,7 +108,11 @@ namespace FileManager.DAL
 
 				e.Property(p => p.Title).IsRequired().HasMaxLength(100);
 				e.Property(p => p.Position).IsRequired();
+				e.Property(p => p.AttachedDataSetId).IsRequired(false);
+				e.Property(p => p.UpdatedAt).IsRequired();
+				e.Property(p => p.IsDeleted).HasDefaultValue(false);
 
+				e.HasOne(p => p.AttachedDataSet).WithMany().HasForeignKey(p => p.AttachedDataSetId).OnDelete(DeleteBehavior.NoAction);
 				e.HasOne(p => p.Course).WithMany(p => p.CourseItems).HasForeignKey(p => p.CourseId).OnDelete(DeleteBehavior.Cascade);
 				e.HasOne(p => p.CourseItemType).WithMany().HasForeignKey(p => p.CourseItemTypeId).OnDelete(DeleteBehavior.NoAction);
 			});

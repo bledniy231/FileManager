@@ -43,7 +43,7 @@ namespace FileManager.BLL.Files
 
 				try
 				{
-					return await CreateResponse(async () =>
+					return CreateResponse(() =>
 					{
 						string tempZipPath = Path.Combine(_basePathForTempFiles, $"{Guid.NewGuid()}_{request.DataSetId}_{request.DataId}.zip");
 						var zipMode = ZipArchiveMode.Create;
@@ -54,7 +54,7 @@ namespace FileManager.BLL.Files
 
 						using (var archive = ZipFile.Open(tempZipPath, zipMode))
 						{
-							await Task.Run(() => archive.CreateEntryFromFile(file.FullName, file.Name));
+							archive.CreateEntryFromFile(file.FullName, file.Name);
 						}
 
 						return tempZipPath;
@@ -71,7 +71,7 @@ namespace FileManager.BLL.Files
 					.AsNoTracking()
 					.Include(d => d.Binaries)
 					.Include(d => d.Storage)
-					.FirstOrDefaultAsync(d => d.Id == request.DataSetId);
+					.FirstOrDefaultAsync(d => d.Id == request.DataSetId, cancellationToken);
 
 				if (dataSet == null)
 				{
@@ -80,11 +80,11 @@ namespace FileManager.BLL.Files
 
 				try
 				{
-					return await CreateResponse(async () =>
+					return CreateResponse(() =>
 					{
 						string tempZipPath = Path.Combine(_basePathForTempFiles, $"{Guid.NewGuid()}_{request.DataSetId}.zip");
 						string dataSetDirName = dataSet.GetDataSetDirectory();
-						await Task.Run(() => ZipFile.CreateFromDirectory(dataSetDirName, tempZipPath));
+						ZipFile.CreateFromDirectory(dataSetDirName, tempZipPath);
 						return tempZipPath;
 					});
 				}
@@ -95,13 +95,13 @@ namespace FileManager.BLL.Files
 			}
 		}
 
-		private async Task<DownloadFilesResponse> CreateResponse(Func<Task<string>> zipFunc)
+		private static DownloadFilesResponse CreateResponse(Func<string> zipFunc)
 		{
 			// Не используется ключевое слово using у FileStream потому,
 			// что FileStreamResult сам вызывает метод Dispose() у потока, после передачи данных из него.
 			// Смотри: https://github.com/aspnet/AspNetWebStack/blob/main/src/System.Web.Mvc/FileStreamResult.cs
 
-			string tempZipPath = await zipFunc();
+			string tempZipPath = zipFunc();
 			var fileStream = new FileStream(tempZipPath, FileMode.Open, FileAccess.Read);
 
 			return new DownloadFilesResponse(fileStream, "application/zip", Path.GetFileName(tempZipPath), null);

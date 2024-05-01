@@ -5,16 +5,17 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 
 namespace FileManager.Controllers
 {
 	[Route("api/[controller]/[action]")]
 	[ApiController]
-	public class FilesController(ControllersHelper controllersHelper) : ControllerBase
+	public class FilesController(
+		ControllersHelper controllersHelper,
+		IMediator mediator) : ControllerBase
 	{
 		private readonly ControllersHelper _controllersHelper = controllersHelper;
-		IMediator _mediator;
+		private readonly IMediator _mediator = mediator;
 		[HttpPost]
 		[Authorize]
 		[Consumes("multipart/form-data")]
@@ -22,14 +23,14 @@ namespace FileManager.Controllers
 		[DisableFormValueModelBinding]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> UploadFiles([FromQuery] long userId)
+		public async Task<IActionResult> UploadUserFiles([FromQuery] long userId)
 		{
 			if (!_controllersHelper.IdentifyUser(User, userId))
 			{
 				return Unauthorized("Wrong user id");
 			}
 
-			var request = new UploadFilesRequest(userId, Request.ContentType, Request.Body);
+			var request = new UploadFilesRequest(userId, null, Request.ContentType, Request.Body);
 			return await _controllersHelper.SendRequet<UploadFilesRequest, DefaultResponse>(request);
 		}
 
