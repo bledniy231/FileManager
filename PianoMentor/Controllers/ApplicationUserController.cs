@@ -95,13 +95,12 @@ namespace PianoMentor.Controllers
 
 		[Authorize]
 		[HttpGet]
-		public async Task<IActionResult> GetCoursesUserStatistics([FromQuery] long userId)
+		public async Task<IActionResult> GetUserStatistics([FromQuery] long userId)
 		{
-			var coursesUserStatistics = await _mediator.Send(new GetCoursesUserStatisticsRequest(userId));
+			var coursesUserStatistics = await _mediator.Send(new GetUserStatisticsRequest(userId));
 
 			return Ok(coursesUserStatistics);
 		}
-
 
 
 

@@ -36,6 +36,13 @@ namespace PianoMentor.Controllers
 			return await _controllersHelper.SendRequet<GetCourseItemsRequest, GetCourseItemsResponse>(new GetCourseItemsRequest { UserId = userId, CourseId = courseId });
 		}
 
+		[HttpPut]
+		[Authorize]
+		public async Task<IActionResult> SetCourseItemProgress([FromBody] SetCourseItemProgressRequest request)
+		{
+			return await _controllersHelper.SendRequet<SetCourseItemProgressRequest, DefaultResponse>(request);
+		}
+
 		[HttpPost]
 		[Authorize]
 		public async Task<IActionResult> SetCourseViaAdmin([FromBody] SetNewCoursesViaAdminRequest request)

@@ -2,7 +2,7 @@
 
 namespace PianoMentor.Contract.ApplicationUser
 {
-	public class GetCoursesUserStatisticsRequest(long userId) : IRequest<GetCoursesUserStatisticsResponse>
+	public class GetUserStatisticsRequest(long userId) : IRequest<GetUserStatisticsResponse>
 	{
 		public long UserId { get; set; } = userId;
 	}
