@@ -38,6 +38,16 @@ namespace PianoMentor.BLL.ApplicationUser
 				})
 				.ToList();
 
+			var courseItemsCount = _dbContext.CourseItems
+				.AsNoTracking()
+				.GroupBy(ci => ci.CourseItemTypeId)
+				.Select(g => new
+				{
+					CourseItemTypeId = g.Key,
+					Count = g.Count()
+				})
+				.ToList();
+
 			return Task.FromResult(
 				new GetUserStatisticsResponse(
 					coursesUserProgress, 
