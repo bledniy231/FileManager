@@ -4,6 +4,7 @@ using PianoMentor.DAL.Domain.PianoMentor.Courses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PianoMentor.DAL.Models.PianoMentor.Texts;
 
 namespace PianoMentor.DAL
 {
@@ -21,6 +22,8 @@ namespace PianoMentor.DAL
 		public DbSet<CourseUserProgress> CourseUserProgresses { get; set; }
 		public DbSet<CourseItemUserProgress> CourseItemUserProgresses { get; set; }
 		public DbSet<CourseItemProgressType> CourseItemProgressTypes { get; set; }
+		public DbSet<ViewPagerText> ViewPagerTexts { get; set; }
+		public DbSet<ViewPagerTextNumberRanges> ViewPagerTextNumberRanges { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
@@ -166,6 +169,17 @@ namespace PianoMentor.DAL
 				{
 					e.HasData(new { Id = (int)v, Name = v.ToString() });
 				}
+			});
+
+			builder.Entity<ViewPagerText>(e =>
+			{
+				e.ToTable("ViewPagerTexts");
+
+				e.HasKey(p => p.Id);
+
+				e.Property(p => p.IsDeleted).HasDefaultValue(false);
+
+				e.HasMany(p => p.ViewPagerTextNumberRanges).WithOne().HasForeignKey(p => p.ViewPagerTextId).OnDelete(DeleteBehavior.Cascade);
 			});
 
 			base.OnModelCreating(builder);

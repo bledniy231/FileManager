@@ -60,7 +60,7 @@ namespace PianoMentor
 					ValidateAudience = false,
 					ValidateLifetime = true,
 					ValidateIssuerSigningKey = true,
-					ValidIssuer =configManager["Jwt:Issuer"],
+					ValidIssuer = configManager["Jwt:Issuer"],
 					ValidAudience = configManager["Jwt:Audience"],
 					IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configManager["Jwt:Secret"]))
 				};

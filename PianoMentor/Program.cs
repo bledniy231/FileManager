@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Reflection;
+using PianoMentor.BLL.WordsEndings;
 
 namespace PianoMentor
 {
@@ -43,6 +44,7 @@ namespace PianoMentor
 			builder.Services.AddSingleton<ICryptoLinkManager, CryptoLinkManagerViaAes>();
 			builder.Services.AddSingleton<IPercentageChecker, PercentageChecker>();
 			builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			builder.Services.AddSingleton<WordsEndingsManager>();
 			builder.Services.AddSingleton<ControllersHelper>();
 			builder.Services.TryAddSingleton<FormOptions>();
 

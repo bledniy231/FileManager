@@ -1,26 +1,22 @@
 ﻿using PianoMentor.Contract.Default;
 using PianoMentor.Contract.Models.PianoMentor.Courses;
-using System.ComponentModel;
-using System.Reflection;
+using PianoMentor.Contract.Models.PianoMentor.Statistics;
+using PianoMentor.Contract.Models.PianoMentor.Texts;
 
 namespace PianoMentor.Contract.ApplicationUser
 {
 	public class GetUserStatisticsResponse(
 		List<CourseUserProgressModel> coursesUsersProgress, 
-		int completedLectures,
-		int allLectures,
-		int completedExercises,
-		int allExcercises,
-		int completedQuizzes,
-		int allQuizzes,
+		BaseStatisticsModel lectureStatistics,
+		BaseStatisticsModel exersiceStatistics,
+		BaseStatisticsModel quizStatistics,
+		ViewPagerTextModel[] viewPagerTexts,
 		string[]? errors) : DefaultResponse(errors)
 	{
 		public List<CourseUserProgressModel> CoursesUserProgress { get; set; } = coursesUsersProgress;
-		public int CompletedLectures { get; set; } = completedLectures;
-		public int AllLectures { get; set; } = allLectures;
-		public int CompletedExercises { get; set; } = completedExercises;
-		public int AllExcercises { get; set; } = allExcercises;
-		public int CompletedQuizzes { get; set; } = completedQuizzes;
-		public int AllQuizzes { get; set; } = allQuizzes;
+		public BaseStatisticsModel LectureStatistics { get; set; } = lectureStatistics;
+		public BaseStatisticsModel ExersiceStatistics { get; set; } = exersiceStatistics;
+		public BaseStatisticsModel QuizStatistics { get; set; } = quizStatistics;
+		public ViewPagerTextModel[] ViewPagerTexts { get; set; } = viewPagerTexts;
 	}
 }
