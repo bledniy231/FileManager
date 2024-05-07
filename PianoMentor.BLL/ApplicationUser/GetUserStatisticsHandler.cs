@@ -117,14 +117,22 @@ namespace PianoMentor.BLL.ApplicationUser
 					Title = _wordsEndingsManager.GetEnding(CourseItemTypesEnumeration.Exercise, exercisesCompletedCount)
 				};
 
-				var quizzStatistics = new BaseStatisticsModel
+				var quizStatistics = new BaseStatisticsModel
 				{
 					ProgressValueAbsolute = quizzesCompletedCount,
 					ProgressValueInPercent = (int)Math.Round((double)quizzesCompletedCount / courseItemsCount.First(IsQuiz).Count * 100),
 					Title = _wordsEndingsManager.GetEnding(CourseItemTypesEnumeration.Quiz, quizzesCompletedCount)
 				};
 
-				return Task.FromResult(new GetUserStatisticsResponse(coursesUserProgress, lectureStatistics, exerciseStatistics, quizzStatistics, viewPagerList, null));
+				var currentCourse = coursesUserProgress.FirstOrDefault(cup => cup.ProgressInPercent != 100) ?? new CourseUserProgressModel() { CourseName = "Курс \"Введение\"", ProgressInPercent = 0 };
+				var courseStatistics = new BaseStatisticsModel
+				{
+					ProgressValueAbsolute = currentCourse.ProgressInPercent,
+					ProgressValueInPercent = currentCourse.ProgressInPercent,
+					Title = currentCourse.CourseName
+				};
+
+				return Task.FromResult(new GetUserStatisticsResponse(lectureStatistics, exerciseStatistics, quizStatistics, courseStatistics, viewPagerList, null));
 			}
 			catch
 			{

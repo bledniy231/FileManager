@@ -7,8 +7,8 @@ namespace PianoMentor.BLL.WordsEndings
 		private Dictionary<CourseItemTypesEnumeration, string[]> WordEndings { get; } =
 			new Dictionary<CourseItemTypesEnumeration, string[]>()
 			{
-				{ CourseItemTypesEnumeration.Lecture, ["лекция", "лекции", "лекций"] },
-				{ CourseItemTypesEnumeration.Exercise, ["упражнение", "упражнения", "упражнений"] },
+				{ CourseItemTypesEnumeration.Lecture, ["Лекция", "Лекции", "Лекций"] },
+				{ CourseItemTypesEnumeration.Exercise, ["Упражнение", "Упражнения", "Упражнений"] },
 				{ CourseItemTypesEnumeration.Quiz, ["тест", "теста", "тестов"] }
 			};
 
