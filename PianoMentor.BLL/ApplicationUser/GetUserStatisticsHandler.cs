@@ -12,12 +12,9 @@ using System.Net;
 
 namespace PianoMentor.BLL.ApplicationUser
 {
-	internal class GetUserStatisticsHandler(
-		PianoMentorDbContext dbContext,
-		WordsEndingsManager wordsEndingsManager) : IRequestHandler<GetUserStatisticsRequest, GetUserStatisticsResponse>
+	internal class GetUserStatisticsHandler(PianoMentorDbContext dbContext) : IRequestHandler<GetUserStatisticsRequest, GetUserStatisticsResponse>
 	{
 		private readonly PianoMentorDbContext _dbContext = dbContext;
-		private readonly WordsEndingsManager _wordsEndingsManager = wordsEndingsManager;
 
 		public Task<GetUserStatisticsResponse> Handle(GetUserStatisticsRequest request, CancellationToken cancellationToken)
 		{
@@ -68,14 +65,14 @@ namespace PianoMentor.BLL.ApplicationUser
 				var quizViewPagerItem = _dbContext.ViewPagerTexts
 					.AsNoTracking()
 					.Where(vpt => vpt.Type == "Quiz"
-								&& !vpt.IsDeleted
-								&& vpt.ViewPagerTextNumberRanges
-									.Any(nr => nr.Number <= quizzesCompletedCount))
-									.OrderByDescending(vpt => vpt.ViewPagerTextNumberRanges.Max(nr => nr.Number))
+						&& !vpt.IsDeleted
+						&& vpt.Id == vpt.ViewPagerTextNumberRanges
+							.OrderByDescending(nr => nr.Number)
+							.First(nr => nr.Number <= quizzesCompletedCount).ViewPagerTextId)
 					.Select(vpt => new ViewPagerTextModel
 					{
 						Title = vpt.Title,
-						Description = vpt.Description,
+						Description = GetViewPagerDescription(vpt.Description, quizzesCompletedCount, "Quiz"),
 						ProgressValueAbsolute = quizzesCompletedCount,
 						ProgressValueInPercent = quizzesValueInPercent
 					})
@@ -87,14 +84,14 @@ namespace PianoMentor.BLL.ApplicationUser
 				var courseViewPagerItem = _dbContext.ViewPagerTexts
 					.AsNoTracking()
 					.Where(vpt => vpt.Type == "Course"
-								&& !vpt.IsDeleted
-								&& vpt.ViewPagerTextNumberRanges
-									.Any(nr => nr.Number <= coursesUserProgress.Count))
-									.OrderByDescending(vpt => vpt.ViewPagerTextNumberRanges.Max(nr => nr.Number))
+						&& !vpt.IsDeleted
+						&& vpt.Id == vpt.ViewPagerTextNumberRanges
+							.OrderByDescending(nr => nr.Number)
+							.First(nr => nr.Number <= coursesValueAbsolute).ViewPagerTextId)
 					.Select(vpt => new ViewPagerTextModel
 					{
 						Title = vpt.Title,
-						Description = vpt.Description,
+						Description = GetViewPagerDescription(vpt.Description, coursesValueAbsolute, "Course"),
 						ProgressValueAbsolute = coursesValueAbsolute,
 						ProgressValueInPercent = GetPercentValue(coursesValueAbsolute, coursesUserProgress.Count)
 					})
@@ -107,21 +104,21 @@ namespace PianoMentor.BLL.ApplicationUser
 				{
 					ProgressValueAbsolute = lecturesCompletedCount,
 					ProgressValueInPercent = (int)Math.Round((double)lecturesCompletedCount / courseItemsCount.First(IsLecture).Count * 100),
-					Title = _wordsEndingsManager.GetEnding(CourseItemTypesEnumeration.Lecture, lecturesCompletedCount)
+					Title = WordsEndingsManager.GetSimpleEnding(CourseItemTypesEnumeration.Lecture, lecturesCompletedCount)
 				};
 
 				var exerciseStatistics = new BaseStatisticsModel
 				{
 					ProgressValueAbsolute = exercisesCompletedCount,
 					ProgressValueInPercent = (int)Math.Round((double)exercisesCompletedCount / courseItemsCount.First(IsExercise).Count * 100),
-					Title = _wordsEndingsManager.GetEnding(CourseItemTypesEnumeration.Exercise, exercisesCompletedCount)
+					Title = WordsEndingsManager.GetSimpleEnding(CourseItemTypesEnumeration.Exercise, exercisesCompletedCount)
 				};
 
 				var quizStatistics = new BaseStatisticsModel
 				{
 					ProgressValueAbsolute = quizzesCompletedCount,
 					ProgressValueInPercent = (int)Math.Round((double)quizzesCompletedCount / courseItemsCount.First(IsQuiz).Count * 100),
-					Title = _wordsEndingsManager.GetEnding(CourseItemTypesEnumeration.Quiz, quizzesCompletedCount)
+					Title = WordsEndingsManager.GetSimpleEnding(CourseItemTypesEnumeration.Quiz, quizzesCompletedCount)
 				};
 
 				var currentCourse = coursesUserProgress.FirstOrDefault(cup => cup.ProgressInPercent != 100) ?? new CourseUserProgressModel() { CourseName = "Курс \"Введение\"", ProgressInPercent = 0 };
@@ -134,9 +131,9 @@ namespace PianoMentor.BLL.ApplicationUser
 
 				return Task.FromResult(new GetUserStatisticsResponse(lectureStatistics, exerciseStatistics, quizStatistics, courseStatistics, viewPagerList, null));
 			}
-			catch
+			catch (Exception ex)
 			{
-				return Task.FromResult(new GetUserStatisticsResponse(null, null, null, null, null, ["No courses items"]));
+				return Task.FromResult(new GetUserStatisticsResponse(null, null, null, null, null, [ex.Message]));
 			}
 		}
 
@@ -144,15 +141,15 @@ namespace PianoMentor.BLL.ApplicationUser
 		private static bool IsExercise(dynamic anonObject) => anonObject.CourseItemTypeId == (int)CourseItemTypesEnumeration.Exercise;
 		private static bool IsQuiz(dynamic anonObject) => anonObject.CourseItemTypeId == (int)CourseItemTypesEnumeration.Quiz;
 
-		private static bool IsCorrectViewPagerText(ViewPagerText vpt, string itemType, int itemCount)
-			=> vpt.Type == itemType
-				&& !vpt.IsDeleted
-				&& vpt.Id == (vpt.ViewPagerTextNumberRanges
-					.LastOrDefault(nr =>
-						nr.ViewPagerTextId == vpt.Id
-						&& nr.Number <= itemCount)?.ViewPagerTextId ?? 0);
-
 		private static int GetPercentValue(int completedCount, int totalCount)
 			=> (int)Math.Round((double)completedCount / totalCount * 100);
+
+		private static string GetViewPagerDescription(string descriptionWithPlaceholders, int count, string type)
+		{
+			string ending = WordsEndingsManager.GetEndingForTextWithPlaceholders(type, count) 
+				?? throw new ArgumentNullException("Wrong item type for creting view pager description");
+
+			return descriptionWithPlaceholders.Replace("<number>", count.ToString()).Replace("<subject>", ending);
+		}
 	}
 }
