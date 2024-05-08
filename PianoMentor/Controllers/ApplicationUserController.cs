@@ -43,7 +43,6 @@ namespace PianoMentor.Controllers
 			return await Login(new AuthUserRequest(userRegisterResponse.Email, userRegisterResponse.Password));
 		}
 
-		[Authorize]
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]

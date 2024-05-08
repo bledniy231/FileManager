@@ -62,7 +62,8 @@ namespace PianoMentor.BLL.ApplicationUser
 				{
 					AccessToken = newAccessToken,
 					AccessTokenExpireTime = newAccessTokenExpiryDateTime,
-					RefreshToken = newRefreshToken
+					RefreshToken = newRefreshToken,
+					RefreshTokenExpireTime = request.Tokens.RefreshTokenExpireTime
 				}
 			};
 		}
