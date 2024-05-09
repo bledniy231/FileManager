@@ -1,10 +1,10 @@
-﻿using PianoMentor.Attributes;
-using PianoMentor.Contract.Default;
-using PianoMentor.Contract.Files;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using PianoMentor.Attributes;
+using PianoMentor.Contract.Default;
+using PianoMentor.Contract.Files;
 
 namespace PianoMentor.Controllers
 {

@@ -1,16 +1,17 @@
-﻿using Azure.Core;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PianoMentor.Attributes;
 using PianoMentor.Contract.Courses;
 using PianoMentor.Contract.Default;
 using PianoMentor.Contract.Files;
 using PianoMentor.Contract.Models.PianoMentor.Courses;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using PianoMentor.Contract.Quizzes;
+using PianoMentor.Contract.Statistics;
 
 namespace PianoMentor.Controllers
 {
-	[ApiController]
+    [ApiController]
 	[Route("api/[controller]/[action]")]
 	public class CoursesController(
 		ControllersHelper controllersHelper,
@@ -111,6 +112,37 @@ namespace PianoMentor.Controllers
 			{
 				FileDownloadName = response.FileDownloadName
 			};
+		}
+
+		[Authorize]
+		[HttpGet]
+		public async Task<IActionResult> GetCourseItemQuiz([FromQuery] int courseId, [FromQuery] int courseItemId, [FromQuery] long userId)
+		{
+			if (courseId <= 0 || courseItemId <= 0 || userId <= 0)
+			{
+				return BadRequest("Course id, course item id or user id cannot be less or equals zero");
+			}
+
+			var request = new GetCourseItemQuizRequest()
+			{
+				CourseId = courseId,
+				CourseItemId = courseItemId,
+				UserId = userId
+			};
+
+			return await _controllersHelper.SendRequet<GetCourseItemQuizRequest, GetCourseItemQuizResponse>(request);
+		}
+
+		[Authorize]
+		[HttpPost]
+		public async Task<IActionResult> SetCourseItemQuizUserAnswers([FromBody] SetCourseItemQuizUserAnswersRequest request)
+		{
+			if ((request.IsQuizFailed ^ request.IsQuizPassed) | (request.IsQuizPassed ^ request.IsQuizInProgress))
+			{
+				return BadRequest("IsQuizFailed, IsQuizPassed, IsQuizInProgress cannot be set at the same time");
+			}
+
+			return await _controllersHelper.SendRequet<SetCourseItemQuizUserAnswersRequest, DefaultResponse>(request);
 		}
 	}
 }

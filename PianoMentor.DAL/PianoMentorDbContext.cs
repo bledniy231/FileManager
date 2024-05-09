@@ -1,9 +1,10 @@
-﻿using PianoMentor.Contract.Models.PianoMentor.Courses;
-using PianoMentor.DAL.Domain.Identity;
-using PianoMentor.DAL.Domain.PianoMentor.Courses;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PianoMentor.Contract.Models.PianoMentor.Courses;
+using PianoMentor.DAL.Domain.Identity;
+using PianoMentor.DAL.Domain.PianoMentor.Courses;
+using PianoMentor.DAL.Models.PianoMentor.Quizzes;
 using PianoMentor.DAL.Models.PianoMentor.Texts;
 
 namespace PianoMentor.DAL
@@ -24,6 +25,10 @@ namespace PianoMentor.DAL
 		public DbSet<CourseItemProgressType> CourseItemProgressTypes { get; set; }
 		public DbSet<ViewPagerText> ViewPagerTexts { get; set; }
 		public DbSet<ViewPagerTextNumberRanges> ViewPagerTextNumberRanges { get; set; }
+		public DbSet<QuizQuestion> QuizQuestions { get; set; }
+		public DbSet<QuizQuestionAnswer> QuizQuestionAnswers { get; set; }
+		public DbSet<QuizQuestionUserAnswerLog> QuizQuestionUserAnswerLogs { get; set; }
+		public DbSet<QuizQuestionType> QuizQuestionTypes { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
@@ -115,7 +120,7 @@ namespace PianoMentor.DAL
 				e.Property(p => p.UpdatedAt).IsRequired();
 				e.Property(p => p.IsDeleted).HasDefaultValue(false);
 
-				e.HasOne(p => p.AttachedDataSet).WithMany().HasForeignKey(p => p.AttachedDataSetId).OnDelete(DeleteBehavior.NoAction);
+				e.HasOne(p => p.AttachedDataSet).WithOne().HasForeignKey<CourseItem>(p => p.AttachedDataSetId).OnDelete(DeleteBehavior.NoAction);
 				e.HasOne(p => p.Course).WithMany(p => p.CourseItems).HasForeignKey(p => p.CourseId).OnDelete(DeleteBehavior.Cascade);
 				e.HasOne(p => p.CourseItemType).WithMany().HasForeignKey(p => p.CourseItemTypeId).OnDelete(DeleteBehavior.NoAction);
 			});
@@ -180,6 +185,56 @@ namespace PianoMentor.DAL
 				e.Property(p => p.IsDeleted).HasDefaultValue(false);
 
 				e.HasMany(p => p.ViewPagerTextNumberRanges).WithOne().HasForeignKey(p => p.ViewPagerTextId).OnDelete(DeleteBehavior.Cascade);
+			});
+
+			builder.Entity<QuizQuestion>(e =>
+			{
+				e.ToTable("QuizQuestions");
+
+				e.HasKey(p => p.QuestionId);
+
+				e.Property(p => p.AttachedDataSetId).IsRequired(false);
+				e.Property(p => p.IsDeleted).HasDefaultValue(false);
+				e.Property(p => p.QuestionText).HasMaxLength(255);
+
+				e.HasOne(p => p.AttachedDataSet).WithOne().HasForeignKey<QuizQuestion>(p => p.AttachedDataSetId).OnDelete(DeleteBehavior.NoAction);
+				e.HasOne(p => p.CourseItem).WithMany().HasForeignKey(p => p.CourseItemId).OnDelete(DeleteBehavior.NoAction);
+				e.HasOne(p => p.QuizQuestionType).WithMany().HasForeignKey(p => p.QuizQuestionTypeId).OnDelete(DeleteBehavior.NoAction);
+			});
+
+			builder.Entity<QuizQuestionAnswer>(e =>
+			{
+				e.ToTable("QuizQuestionsAnswers");
+
+				e.HasKey(p => p.AnswerId);
+
+				e.Property(p => p.AnswerText).HasMaxLength(255).IsRequired();
+				e.Property(p => p.IsCorrect).IsRequired();
+				e.Property(p => p.IsDeleted).HasDefaultValue(false);
+
+				e.HasOne(p => p.QuizQuestions).WithMany(p => p.QuizQuestionsAnswers).HasForeignKey(p => p.QuizQuestionId).OnDelete(DeleteBehavior.Cascade);
+			});
+
+			builder.Entity<QuizQuestionType>(e =>
+			{
+				e.ToTable("QuizQuestionsTypes");
+
+				e.HasKey(p => p.QuizQuestionTypeId);
+
+				e.Property(p => p.Name).HasMaxLength(70).IsRequired();
+			});
+
+			builder.Entity<QuizQuestionUserAnswerLog>(e =>
+			{
+				e.ToTable("QuizQuestionsUsersAnswersLogs");
+
+				e.HasKey(p => p.AnswerLogId);
+
+				e.Property(p => p.UserAnswerText).IsRequired(false).HasMaxLength(150);
+
+				e.HasOne(p => p.User).WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.NoAction);
+				e.HasOne(p => p.Question).WithMany().HasForeignKey(e => e.QuestionId).OnDelete(DeleteBehavior.NoAction);
+				e.HasOne(p => p.Answer).WithMany().HasForeignKey(e => e.AnswerId).OnDelete(DeleteBehavior.NoAction);
 			});
 
 			base.OnModelCreating(builder);

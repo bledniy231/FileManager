@@ -1,9 +1,9 @@
-﻿using PianoMentor.Certificates;
-using PianoMentor.Contract.ApplicationUser;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using PianoMentor.Certificates;
+using PianoMentor.Contract.ApplicationUser;
 
 namespace PianoMentor.Controllers
 {

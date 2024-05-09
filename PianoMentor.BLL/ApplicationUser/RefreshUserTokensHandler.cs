@@ -1,9 +1,8 @@
-﻿using PianoMentor.BLL.TokenService;
+﻿using MediatR;
+using Microsoft.AspNetCore.Identity;
+using PianoMentor.BLL.TokenService;
 using PianoMentor.Contract.ApplicationUser;
 using PianoMentor.DAL.Domain.Identity;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 
 namespace PianoMentor.BLL.ApplicationUser

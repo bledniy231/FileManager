@@ -1,13 +1,8 @@
-﻿using PianoMentor.Contract.Courses;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
+using PianoMentor.Contract.Courses;
 using PianoMentor.Contract.Models.PianoMentor.Courses;
 using PianoMentor.DAL;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PianoMentor.BLL.Couses
 {
