@@ -18,6 +18,11 @@ namespace PianoMentor.BLL.Files
 
 		public async Task<DownloadFilesResponse> Handle(DownloadFilesRequest request, CancellationToken cancellationToken)
 		{
+			if (!request.IsZipArchiveResponse && request.DataId == null)
+			{
+				return new DownloadFilesResponse(null, null, null, ["Cannot download whole data set without a zip archive, change flag IsZipArchiveResponse=true"]);
+			}
+
 			if (!Directory.Exists(_basePathForTempFiles))
 			{
 				Directory.CreateDirectory(_basePathForTempFiles);
@@ -43,22 +48,27 @@ namespace PianoMentor.BLL.Files
 
 				try
 				{
-					return CreateResponse(() =>
+					if (request.IsZipArchiveResponse)
 					{
-						string tempZipPath = Path.Combine(_basePathForTempFiles, $"{Guid.NewGuid()}_{request.DataSetId}_{request.DataId}.zip");
-						var zipMode = ZipArchiveMode.Create;
-						if (File.Exists(tempZipPath))
+						return CreateResponse(() =>
 						{
-							zipMode = ZipArchiveMode.Read;
-						}
+							string tempZipPath = Path.Combine(_basePathForTempFiles, $"{Guid.NewGuid()}_{request.DataSetId}_{request.DataId}.zip");
+							var zipMode = ZipArchiveMode.Create;
+							if (File.Exists(tempZipPath))
+							{
+								zipMode = ZipArchiveMode.Read;
+							}
 
-						using (var archive = ZipFile.Open(tempZipPath, zipMode))
-						{
-							archive.CreateEntryFromFile(file.FullName, file.Name);
-						}
+							using (var archive = ZipFile.Open(tempZipPath, zipMode))
+							{
+								archive.CreateEntryFromFile(file.FullName, file.Name);
+							}
 
-						return tempZipPath;
-					});
+							return tempZipPath;
+						});
+					}
+					
+					return CreateResponse(() => file.FullName);
 				}
 				catch (Exception ex)
 				{
@@ -95,16 +105,16 @@ namespace PianoMentor.BLL.Files
 			}
 		}
 
-		private static DownloadFilesResponse CreateResponse(Func<string> zipFunc)
+		private static DownloadFilesResponse CreateResponse(Func<string> func)
 		{
 			// Не используется ключевое слово using у FileStream потому,
 			// что FileStreamResult сам вызывает метод Dispose() у потока, после передачи данных из него.
 			// Смотри: https://github.com/aspnet/AspNetWebStack/blob/main/src/System.Web.Mvc/FileStreamResult.cs
 
-			string tempZipPath = zipFunc();
-			var fileStream = new FileStream(tempZipPath, FileMode.Open, FileAccess.Read);
+			string tempPath = func();
+			var fileStream = new FileStream(tempPath, FileMode.Open, FileAccess.Read);
 
-			return new DownloadFilesResponse(fileStream, "application/zip", Path.GetFileName(tempZipPath), null);
+			return new DownloadFilesResponse(fileStream, "application/zip", Path.GetFileName(tempPath), null);
 		}
 	}
 }

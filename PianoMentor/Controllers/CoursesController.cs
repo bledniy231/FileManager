@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using PianoMentor.Attributes;
 using PianoMentor.Contract.Courses;
 using PianoMentor.Contract.Default;
@@ -87,7 +88,7 @@ namespace PianoMentor.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> DownloadLecturePdf([FromQuery] int courseItemId)
+		public async Task<IActionResult> DownloadCourseItemFile([FromQuery] int courseItemId)
 		{
 			var isCourseItemExistResponse = await _mediator.Send(new CheckIfCourseItemExistsRequest
 			{
@@ -100,7 +101,7 @@ namespace PianoMentor.Controllers
 				return NotFound($"Course item not found, errors: {string.Join("; ", isCourseItemExistResponse.Errors)}");
 			}
 
-			var downloadRequest = new DownloadLecturePdfRequest(courseItemId);
+			var downloadRequest = new DownloadCourseItemFileRequest(courseItemId);
 			var response = await _mediator.Send(downloadRequest);
 
 			if (response.Errors != null && response.Errors.Length > 0)
@@ -137,12 +138,25 @@ namespace PianoMentor.Controllers
 		[HttpPost]
 		public async Task<IActionResult> SetCourseItemQuizUserAnswers([FromBody] SetCourseItemQuizUserAnswersRequest request)
 		{
-			if ((request.IsQuizFailed ^ request.IsQuizPassed) | (request.IsQuizPassed ^ request.IsQuizInProgress))
+			return await _controllersHelper.SendRequet<SetCourseItemQuizUserAnswersRequest, DefaultResponse>(request);
+		}
+
+		[Authorize]
+		[HttpGet]
+		public async Task<IActionResult> DownloadQuizQuestionFile([FromQuery] long dataSetId)
+		{
+			var request = new DownloadFilesRequest(dataSetId, null, false);
+			var response = await _mediator.Send(request);
+
+			if (!response.Errors.IsNullOrEmpty())
 			{
-				return BadRequest("IsQuizFailed, IsQuizPassed, IsQuizInProgress cannot be set at the same time");
+				return BadRequest(response.Errors);
 			}
 
-			return await _controllersHelper.SendRequet<SetCourseItemQuizUserAnswersRequest, DefaultResponse>(request);
+			return new FileStreamResult(response.FileStream, response.ContentType)
+			{
+				FileDownloadName = response.FileDownloadName
+			};
 		}
 	}
 }

@@ -9,9 +9,11 @@ namespace PianoMentor.Contract.Quizzes
 		public int CourseId { get; set; }
 		public int CourseItemId { get; set; }
 		public long UserId { get; set; }
-		public bool IsQuizInProgress { get; set; }
-		public bool IsQuizPassed { get; set; }
-		public bool IsQuizFailed { get; set; }
-		public List<QuizQuestionUserAnswerModel> UserAnswers { get; set; }
+		/// <summary>
+		/// Ставится true, если пользователь отправляет итоговый вариант прохождения теста
+		/// Ставится false, если пользователь отправляет промежуточный вариант прохождения теста (чтобы, например, продолжить тестирование позже)
+		/// </summary>
+		public bool IsQuizCompletedByUser { get; set; }
+		public List<QuizQuestionModel> QuestionsWithUserAnswers { get; set; }
 	}
 }
