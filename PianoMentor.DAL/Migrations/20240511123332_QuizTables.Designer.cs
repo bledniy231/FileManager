@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PianoMentor.DAL;
 
@@ -11,9 +12,11 @@ using PianoMentor.DAL;
 namespace PianoMentor.DAL.Migrations
 {
     [DbContext(typeof(PianoMentorDbContext))]
-    partial class PianoMentorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240511123332_QuizTables")]
+    partial class QuizTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -659,23 +662,6 @@ namespace PianoMentor.DAL.Migrations
                     b.HasKey("QuizQuestionTypeId");
 
                     b.ToTable("QuizQuestionsTypes", "FileManager");
-
-                    b.HasData(
-                        new
-                        {
-                            QuizQuestionTypeId = 1,
-                            Name = "SingleChoice"
-                        },
-                        new
-                        {
-                            QuizQuestionTypeId = 2,
-                            Name = "MultipleChoice"
-                        },
-                        new
-                        {
-                            QuizQuestionTypeId = 3,
-                            Name = "FreeText"
-                        });
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestionUserAnswerLog", b =>

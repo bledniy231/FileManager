@@ -4,7 +4,7 @@ using PianoMentor.Contract.Models.PianoMentor.Quizzes;
 
 namespace PianoMentor.Contract.Quizzes
 {
-	public class SetCourseItemQuizUserAnswersRequest : IRequest<DefaultResponse>
+	public class SetQuizUserAnswersRequest : IRequest<DefaultResponse>
 	{
 		public int CourseId { get; set; }
 		public int CourseItemId { get; set; }

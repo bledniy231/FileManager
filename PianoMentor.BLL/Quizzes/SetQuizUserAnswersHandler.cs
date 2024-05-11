@@ -8,11 +8,11 @@ using PianoMentor.DAL.Models.PianoMentor.Quizzes;
 
 namespace PianoMentor.BLL.Quizzes
 {
-	internal class SetCourseItemQuizUserAnswersHandler(PianoMentorDbContext dbContext) : IRequestHandler<SetCourseItemQuizUserAnswersRequest, DefaultResponse>
+	internal class SetQuizUserAnswersHandler(PianoMentorDbContext dbContext) : IRequestHandler<SetQuizUserAnswersRequest, DefaultResponse>
 	{
 		private readonly PianoMentorDbContext _dbContext = dbContext;
 
-		public async Task<DefaultResponse> Handle(SetCourseItemQuizUserAnswersRequest request, CancellationToken cancellationToken)
+		public async Task<DefaultResponse> Handle(SetQuizUserAnswersRequest request, CancellationToken cancellationToken)
 		{
 			bool didUserAlreadyCompletedQuiz = _dbContext.QuizQuestionUserAnswerLogs
 				.Count(al =>
@@ -135,7 +135,7 @@ namespace PianoMentor.BLL.Quizzes
 		}
 
 		private async Task SaveUserAnswers(
-			SetCourseItemQuizUserAnswersRequest request, 
+			SetQuizUserAnswersRequest request, 
 			List<QuizQuestion> questionsWithCorrectAnswers, 
 			int courseItemProgressTypeId,
 			CancellationToken cancellationToken)

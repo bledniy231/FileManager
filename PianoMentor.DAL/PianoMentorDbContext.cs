@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PianoMentor.Contract.Models.PianoMentor.Courses;
+using PianoMentor.Contract.Models.PianoMentor.Quizzes;
 using PianoMentor.DAL.Domain.Identity;
 using PianoMentor.DAL.Domain.PianoMentor.Courses;
 using PianoMentor.DAL.Models.PianoMentor.Quizzes;
@@ -222,6 +223,11 @@ namespace PianoMentor.DAL
 				e.HasKey(p => p.QuizQuestionTypeId);
 
 				e.Property(p => p.Name).HasMaxLength(70).IsRequired();
+
+				foreach (var v in Enum.GetValues<QuizQuestionTypeEnumeration>())
+				{
+					e.HasData(new { QuizQuestionTypeId = (int)v, Name = v.ToString() });
+				}
 			});
 
 			builder.Entity<QuizQuestionUserAnswerLog>(e =>

@@ -2,7 +2,7 @@
 
 namespace PianoMentor.Contract.Quizzes
 {
-	public class GetCourseItemQuizRequest : IRequest<GetCourseItemQuizResponse>
+	public class GetQuizRequest : IRequest<GetQuizResponse>
 	{
 		public int CourseId { get; set; }
 		public int CourseItemId { get; set; }

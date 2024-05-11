@@ -15,12 +15,10 @@ namespace PianoMentor.BLL.Files
 	internal class UploadFilesHandler(
 		PianoMentorDbContext dbContext,
 		FormOptions formOptions,
-		IMultipartRequestHelper multipartRequestHelper,
-		IPercentageChecker percentageChecker) 
+		IMultipartRequestHelper multipartRequestHelper) 
 		: IRequestHandler<UploadFilesRequest, DefaultResponse>
 	{
 		private readonly IMultipartRequestHelper _multipartRequestHelper = multipartRequestHelper;
-		private readonly IPercentageChecker _percentageChecker = percentageChecker;
 		private readonly PianoMentorDbContext _dbContext = dbContext;
 		private readonly FormOptions _formOptions = formOptions;
 		private readonly List<string> _failedLoadFilesWithErrors = [];
@@ -180,11 +178,9 @@ namespace PianoMentor.BLL.Files
 							//await targetStream.WriteAsync(buffer.AsMemory(0, readBytes), cancellationToken).ConfigureAwait(false);
 							targetStream.Write(buffer, 0, readBytes);
 							totalReadBytes += readBytes;
-							_percentageChecker.SetPercentage(request.UserId, (float)(totalReadBytes / section.Body.Length * 100.0));
 						}
 
 						totalReadBytes = 0;
-						_percentageChecker.IncreaseFilesCountAlreadyUploaded(request.UserId);
 						binary.Length = targetStream.Length;
 						binaries.Add(binary);
 					}
@@ -221,8 +217,6 @@ namespace PianoMentor.BLL.Files
 				_failedLoadFilesWithErrors.Add("Some files failed to load");
 				return new DefaultResponse([.. _failedLoadFilesWithErrors]);
 			}
-
-			_percentageChecker.RemoveElement(request.UserId);
 
 			return new DefaultResponse(null);
 		}

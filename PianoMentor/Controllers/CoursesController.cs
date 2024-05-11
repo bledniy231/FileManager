@@ -117,28 +117,28 @@ namespace PianoMentor.Controllers
 
 		[Authorize]
 		[HttpGet]
-		public async Task<IActionResult> GetCourseItemQuiz([FromQuery] int courseId, [FromQuery] int courseItemId, [FromQuery] long userId)
+		public async Task<IActionResult> GetQuiz([FromQuery] int courseId, [FromQuery] int courseItemId, [FromQuery] long userId)
 		{
 			if (courseId <= 0 || courseItemId <= 0 || userId <= 0)
 			{
 				return BadRequest("Course id, course item id or user id cannot be less or equals zero");
 			}
 
-			var request = new GetCourseItemQuizRequest()
+			var request = new GetQuizRequest()
 			{
 				CourseId = courseId,
 				CourseItemId = courseItemId,
 				UserId = userId
 			};
 
-			return await _controllersHelper.SendRequet<GetCourseItemQuizRequest, GetCourseItemQuizResponse>(request);
+			return await _controllersHelper.SendRequet<GetQuizRequest, GetQuizResponse>(request);
 		}
 
 		[Authorize]
 		[HttpPost]
-		public async Task<IActionResult> SetCourseItemQuizUserAnswers([FromBody] SetCourseItemQuizUserAnswersRequest request)
+		public async Task<IActionResult> SetQuizUserAnswers([FromBody] SetQuizUserAnswersRequest request)
 		{
-			return await _controllersHelper.SendRequet<SetCourseItemQuizUserAnswersRequest, DefaultResponse>(request);
+			return await _controllersHelper.SendRequet<SetQuizUserAnswersRequest, DefaultResponse>(request);
 		}
 
 		[Authorize]
@@ -157,6 +157,30 @@ namespace PianoMentor.Controllers
 			{
 				FileDownloadName = response.FileDownloadName
 			};
+		}
+
+		[Authorize]
+		[HttpPost]
+		public async Task<IActionResult> SetNewQuiz([FromBody] SetNewQuizRequest request)
+		{
+			if (!_controllersHelper.IsUserAdmin(User, out long _))
+			{
+				return Unauthorized("You aren't administrator");
+			}
+
+			return await _controllersHelper.SendRequet<SetNewQuizRequest, DefaultResponse>(request);
+		}
+
+		[Authorize]
+		[HttpPost]
+		public async Task<IActionResult> UploadQuestionImage([FromBody] UploadQuestionImageRequest request)
+		{
+			if (!_controllersHelper.IsUserAdmin(User, out long _))
+			{
+				return Unauthorized("You aren't administrator");
+			}
+
+			return await _controllersHelper.SendRequet<UploadQuestionImageRequest, DefaultResponse>(request);
 		}
 	}
 }
