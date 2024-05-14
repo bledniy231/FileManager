@@ -24,7 +24,8 @@ namespace PianoMentor.BLL.Statistics
                     itemProgressDb = new CourseItemUserProgress
                     {
                         UserId = request.UserId,
-                        CourseItemId = request.CourseItemId
+                        CourseItemId = request.CourseItemId,
+                        CreatedAt = DateTime.UtcNow
                     };
                     _dbContext.CourseItemUserProgresses.Add(itemProgressDb);
                 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PianoMentor.DAL;
 
@@ -11,9 +12,11 @@ using PianoMentor.DAL;
 namespace PianoMentor.DAL.Migrations
 {
     [DbContext(typeof(PianoMentorDbContext))]
-    partial class PianoMentorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240514175010_ChangeProgressTablesNames")]
+    partial class ChangeProgressTablesNames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

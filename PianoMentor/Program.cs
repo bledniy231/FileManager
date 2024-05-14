@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using PianoMentor.BLL;
 using PianoMentor.BLL.CryptoLinkManager;
 using PianoMentor.BLL.MultipartRequestHelper;
@@ -5,13 +8,9 @@ using PianoMentor.BLL.TokenService;
 using PianoMentor.BLL.UploadPercentageChecker;
 using PianoMentor.Controllers;
 using PianoMentor.DAL;
+using PianoMentor.JsonSettings;
 using PianoMentor.Middleware;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.AspNetCore.Server.Kestrel.Https;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Reflection;
-using PianoMentor.BLL.WordsEndings;
 
 namespace PianoMentor
 {
@@ -22,11 +21,15 @@ namespace PianoMentor
 			var builder = WebApplication.CreateBuilder(args);
 
 			//builder.WebHost.ConfigureCertificate();
-			builder.Services.AddControllers();
+			builder.Services.AddControllers().AddNewtonsoftJson(options =>
+			{
+				options.SerializerSettings.Converters.Add(new CustomDateTimeConverter());
+			});
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGenWithBearerAuthentication();
 
-			builder.Services.AddStackExchangeRedisCache(options => {
+			builder.Services.AddStackExchangeRedisCache(options => 
+			{
 				options.Configuration = "localhost";
 				options.InstanceName = "local_PianoMentor";
 			});

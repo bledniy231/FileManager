@@ -1,8 +1,8 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using PianoMentor.Contract.Models.PianoMentor.Quizzes;
 using PianoMentor.Contract.Quizzes;
 using PianoMentor.DAL;
-using System.Data.Entity;
 
 namespace PianoMentor.BLL.Quizzes
 {
@@ -34,16 +34,16 @@ namespace PianoMentor.BLL.Quizzes
 				})
 				.ToList();
 
+			var allAnswersIds = questions.SelectMany(q => q.Answers.Select(a => a.AnswerId)).ToList();
 			var lastUserAnswers = await _dbContext.QuizQuestionUserAnswerLogs
 				.AsNoTracking()
-				.Where(l =>
-					l.UserId == request.UserId
-					&& questions.SelectMany(q => q.Answers.Select(a => a.AnswerId)).Contains(l.AnswerId)
-					&& l.IsCorrect
-					&& l.AnsweredAt == _dbContext.QuizQuestionUserAnswerLogs
-						.Where(l2 => l2.UserId == request.UserId)
-						.Max(l2 => l2.AnsweredAt))
-				.ToListAsync();
+				.Where(al =>
+					al.UserId == request.UserId
+					&& allAnswersIds.Contains(al.AnswerId)
+					&& al.AnsweredAt == _dbContext.QuizQuestionUserAnswerLogs
+						.Where(al2 => al2.UserId == request.UserId)
+						.Max(al2 => al2.AnsweredAt))
+				.ToListAsync(cancellationToken);
 
 			foreach (var question in questions)
 			{

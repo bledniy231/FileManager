@@ -138,7 +138,7 @@ namespace PianoMentor.Controllers
 		[HttpPost]
 		public async Task<IActionResult> SetQuizUserAnswers([FromBody] SetQuizUserAnswersRequest request)
 		{
-			return await _controllersHelper.SendRequet<SetQuizUserAnswersRequest, DefaultResponse>(request);
+			return await _controllersHelper.SendRequet<SetQuizUserAnswersRequest, SetQuizUserAnswersResponse>(request);
 		}
 
 		[Authorize]

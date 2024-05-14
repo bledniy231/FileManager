@@ -22,6 +22,7 @@ namespace PianoMentor.BLL.Couses
 					.Select(ciup => new
 					{
 						ciup.CourseItemId,
+						ciup.CreatedAt,
 						ProgressName = ciup.CourseItemProgressType.Name
 					})
 					.ToList();
@@ -47,6 +48,7 @@ namespace PianoMentor.BLL.Couses
 						CourseItemType = ci.CourseItemType.Name,
 						CourseItemProgressType = courseItemsUserProgressesNames
 								.Where(ciupn => ciupn.CourseItemId == ci.CourseItemId)
+								.OrderByDescending(ciupn => ciupn.CreatedAt)
 								.Select(ciupn => ciupn.ProgressName)
 								.DefaultIfEmpty("NotStarted")
 								.FirstOrDefault()!

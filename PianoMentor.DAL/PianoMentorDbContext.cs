@@ -142,7 +142,7 @@ namespace PianoMentor.DAL
 
 			builder.Entity<CourseUserProgress>(e =>
 			{
-				e.ToTable("UsersCoursesProgresses");
+				e.ToTable("CourseUsersProgresses");
 
 				e.HasKey(p => p.Id);
 
@@ -154,7 +154,7 @@ namespace PianoMentor.DAL
 
 			builder.Entity<CourseItemUserProgress>(e =>
 			{
-				e.ToTable("UsersCoursesItemsProgresses");
+				e.ToTable("CourseItemsUsersProgresses");
 
 				e.HasKey(p => p.Id);
 
