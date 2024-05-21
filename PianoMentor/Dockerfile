@@ -6,6 +6,11 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password="Qwerty@231"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/app/certs/piano-mentor.pfx"
+
+COPY piano-mentor.pfx "/app/certs/piano-mentor.pfx"
+
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -25,4 +30,7 @@ RUN dotnet publish "./PianoMentor.csproj" -c $BUILD_CONFIGURATION -o /app/publis
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+COPY piano-mentor.pfx "/app/certs/piano-mentor.pfx"
+
 ENTRYPOINT ["dotnet", "PianoMentor.dll"]

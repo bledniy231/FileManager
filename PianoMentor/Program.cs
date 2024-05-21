@@ -41,7 +41,7 @@ namespace PianoMentor
 			builder.Services.AddBearerAuthorization();
 			builder.Services.AddApplicationIdentity();
 
-			builder.Services.AddTransient<TokenServiceMiddleware>();
+			//builder.Services.AddTransient<TokenServiceMiddleware>();
 			builder.Services.AddTransient<ITokenService, TokenService>();
 			builder.Services.AddSingleton<IMultipartRequestHelper, MultipartRequestHelper>();
 			builder.Services.AddSingleton<ICryptoLinkManager, CryptoLinkManagerViaAes>();
@@ -83,7 +83,7 @@ namespace PianoMentor
 			app.UseHttpsRedirection();
 
 			app.UseAuthentication();
-			app.UseMiddleware<TokenServiceMiddleware>();
+			//app.UseMiddleware<TokenServiceMiddleware>();
 			app.UseAuthorization();
 
 			app.MapControllers();

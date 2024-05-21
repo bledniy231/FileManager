@@ -134,7 +134,7 @@ namespace PianoMentor.BLL.Quizzes
 							if (isFirstReadingOfBytes)
 							{
 								isFirstReadingOfBytes = false;
-								if (IsImage(buffer))
+								if (!IsImage(buffer))
 								{
 									return TerminateUploading(questionDb.AttachedDataSet, [$"File name: {file.Name}, Error: File is not an image"]);
 								}

@@ -13,7 +13,7 @@ namespace PianoMentor.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "QuizQuestionsTypes",
                 columns: new[] { "QuizQuestionTypeId", "Name" },
                 values: new object[,]
@@ -28,19 +28,19 @@ namespace PianoMentor.DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DeleteData(
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "QuizQuestionsTypes",
                 keyColumn: "QuizQuestionTypeId",
                 keyValue: 1);
 
             migrationBuilder.DeleteData(
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "QuizQuestionsTypes",
                 keyColumn: "QuizQuestionTypeId",
                 keyValue: 2);
 
             migrationBuilder.DeleteData(
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "QuizQuestionsTypes",
                 keyColumn: "QuizQuestionTypeId",
                 keyValue: 3);

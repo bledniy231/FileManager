@@ -20,7 +20,7 @@ namespace PianoMentor.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("FileManager")
+                .HasDefaultSchema("PianoMentor")
                 .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -53,7 +53,7 @@ namespace PianoMentor.DAL.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", "FileManager");
+                    b.ToTable("AspNetRoles", "PianoMentor");
 
                     b.HasData(
                         new
@@ -91,7 +91,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", "FileManager");
+                    b.ToTable("AspNetRoleClaims", "PianoMentor");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<long>", b =>
@@ -115,7 +115,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", "FileManager");
+                    b.ToTable("AspNetUserClaims", "PianoMentor");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<long>", b =>
@@ -136,7 +136,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", "FileManager");
+                    b.ToTable("AspNetUserLogins", "PianoMentor");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<long>", b =>
@@ -151,7 +151,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", "FileManager");
+                    b.ToTable("AspNetUserRoles", "PianoMentor");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<long>", b =>
@@ -170,7 +170,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", "FileManager");
+                    b.ToTable("AspNetUserTokens", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.BinaryData", b =>
@@ -194,7 +194,7 @@ namespace PianoMentor.DAL.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("DataSetId", "DataId"));
 
-                    b.ToTable("Binaries", "FileManager");
+                    b.ToTable("Binaries", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.DataSet", b =>
@@ -223,7 +223,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("StorageId");
 
-                    b.ToTable("DataSets", "FileManager");
+                    b.ToTable("DataSets", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.OneTimeLink", b =>
@@ -240,7 +240,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasKey("UrlEncryptedToken");
 
-                    b.ToTable("OneTimeLinks", "FileManager");
+                    b.ToTable("OneTimeLinks", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.Storage", b =>
@@ -267,7 +267,7 @@ namespace PianoMentor.DAL.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"));
 
-                    b.ToTable("Storages", "FileManager");
+                    b.ToTable("Storages", "PianoMentor");
 
                     b.HasData(
                         new
@@ -355,7 +355,7 @@ namespace PianoMentor.DAL.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", "FileManager");
+                    b.ToTable("AspNetUsers", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.Course", b =>
@@ -394,7 +394,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasKey("CourseId");
 
-                    b.ToTable("Courses", "FileManager");
+                    b.ToTable("Courses", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItem", b =>
@@ -440,7 +440,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("CourseItemTypeId");
 
-                    b.ToTable("CourseItems", "FileManager");
+                    b.ToTable("CourseItems", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItemProgressType", b =>
@@ -458,7 +458,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CourseItemsProgressTypes", "FileManager");
+                    b.ToTable("CourseItemsProgressTypes", "PianoMentor");
 
                     b.HasData(
                         new
@@ -498,7 +498,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasKey("CourseItemTypeId");
 
-                    b.ToTable("CourseItemTypes", "FileManager");
+                    b.ToTable("CourseItemTypes", "PianoMentor");
 
                     b.HasData(
                         new
@@ -543,7 +543,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsersCoursesItemsProgresses", "FileManager");
+                    b.ToTable("UsersCoursesItemsProgresses", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseUserProgress", b =>
@@ -569,7 +569,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsersCoursesProgresses", "FileManager");
+                    b.ToTable("UsersCoursesProgresses", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestion", b =>
@@ -612,7 +612,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("QuizQuestionTypeId");
 
-                    b.ToTable("QuizQuestions", "FileManager");
+                    b.ToTable("QuizQuestions", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestionAnswer", b =>
@@ -643,7 +643,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("QuizQuestionId");
 
-                    b.ToTable("QuizQuestionsAnswers", "FileManager");
+                    b.ToTable("QuizQuestionsAnswers", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestionType", b =>
@@ -661,7 +661,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasKey("QuizQuestionTypeId");
 
-                    b.ToTable("QuizQuestionsTypes", "FileManager");
+                    b.ToTable("QuizQuestionsTypes", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestionUserAnswerLog", b =>
@@ -697,7 +697,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("QuizQuestionsUsersAnswersLogs", "FileManager");
+                    b.ToTable("QuizQuestionsUsersAnswersLogs", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Texts.ViewPagerText", b =>
@@ -727,7 +727,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ViewPagerTexts", "FileManager");
+                    b.ToTable("ViewPagerTexts", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Texts.ViewPagerTextNumberRanges", b =>
@@ -748,7 +748,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("ViewPagerTextId");
 
-                    b.ToTable("ViewPagerTextNumberRanges", "FileManager");
+                    b.ToTable("ViewPagerTextNumberRanges", "PianoMentor");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<long>", b =>

@@ -13,12 +13,12 @@ namespace PianoMentor.DAL.Migrations
         {
             migrationBuilder.DropIndex(
                 name: "IX_CourseItems_AttachedDataSetId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItems");
 
             migrationBuilder.CreateTable(
                 name: "QuizQuestionsTypes",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 columns: table => new
                 {
                     QuizQuestionTypeId = table.Column<int>(type: "int", nullable: false)
@@ -32,7 +32,7 @@ namespace PianoMentor.DAL.Migrations
 
             migrationBuilder.CreateTable(
                 name: "QuizQuestions",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 columns: table => new
                 {
                     QuestionId = table.Column<int>(type: "int", nullable: false)
@@ -50,26 +50,26 @@ namespace PianoMentor.DAL.Migrations
                     table.ForeignKey(
                         name: "FK_QuizQuestions_CourseItems_CourseItemId",
                         column: x => x.CourseItemId,
-                        principalSchema: "FileManager",
+                        principalSchema: "PianoMentor",
                         principalTable: "CourseItems",
                         principalColumn: "CourseItemId");
                     table.ForeignKey(
                         name: "FK_QuizQuestions_DataSets_AttachedDataSetId",
                         column: x => x.AttachedDataSetId,
-                        principalSchema: "FileManager",
+                        principalSchema: "PianoMentor",
                         principalTable: "DataSets",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_QuizQuestions_QuizQuestionsTypes_QuizQuestionTypeId",
                         column: x => x.QuizQuestionTypeId,
-                        principalSchema: "FileManager",
+                        principalSchema: "PianoMentor",
                         principalTable: "QuizQuestionsTypes",
                         principalColumn: "QuizQuestionTypeId");
                 });
 
             migrationBuilder.CreateTable(
                 name: "QuizQuestionsAnswers",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 columns: table => new
                 {
                     AnswerId = table.Column<int>(type: "int", nullable: false)
@@ -85,7 +85,7 @@ namespace PianoMentor.DAL.Migrations
                     table.ForeignKey(
                         name: "FK_QuizQuestionsAnswers_QuizQuestions_QuizQuestionId",
                         column: x => x.QuizQuestionId,
-                        principalSchema: "FileManager",
+                        principalSchema: "PianoMentor",
                         principalTable: "QuizQuestions",
                         principalColumn: "QuestionId",
                         onDelete: ReferentialAction.Cascade);
@@ -93,7 +93,7 @@ namespace PianoMentor.DAL.Migrations
 
             migrationBuilder.CreateTable(
                 name: "QuizQuestionsUsersAnswersLogs",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 columns: table => new
                 {
                     AnswerLogId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -110,26 +110,26 @@ namespace PianoMentor.DAL.Migrations
                     table.ForeignKey(
                         name: "FK_QuizQuestionsUsersAnswersLogs_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "FileManager",
+                        principalSchema: "PianoMentor",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_QuizQuestionsUsersAnswersLogs_QuizQuestionsAnswers_AnswerId",
                         column: x => x.AnswerId,
-                        principalSchema: "FileManager",
+                        principalSchema: "PianoMentor",
                         principalTable: "QuizQuestionsAnswers",
                         principalColumn: "AnswerId");
                     table.ForeignKey(
                         name: "FK_QuizQuestionsUsersAnswersLogs_QuizQuestions_QuestionId",
                         column: x => x.QuestionId,
-                        principalSchema: "FileManager",
+                        principalSchema: "PianoMentor",
                         principalTable: "QuizQuestions",
                         principalColumn: "QuestionId");
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseItems_AttachedDataSetId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItems",
                 column: "AttachedDataSetId",
                 unique: true,
@@ -137,7 +137,7 @@ namespace PianoMentor.DAL.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizQuestions_AttachedDataSetId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "QuizQuestions",
                 column: "AttachedDataSetId",
                 unique: true,
@@ -145,37 +145,37 @@ namespace PianoMentor.DAL.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizQuestions_CourseItemId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "QuizQuestions",
                 column: "CourseItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizQuestions_QuizQuestionTypeId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "QuizQuestions",
                 column: "QuizQuestionTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizQuestionsAnswers_QuizQuestionId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "QuizQuestionsAnswers",
                 column: "QuizQuestionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizQuestionsUsersAnswersLogs_AnswerId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "QuizQuestionsUsersAnswersLogs",
                 column: "AnswerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizQuestionsUsersAnswersLogs_QuestionId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "QuizQuestionsUsersAnswersLogs",
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizQuestionsUsersAnswersLogs_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "QuizQuestionsUsersAnswersLogs",
                 column: "UserId");
         }
@@ -185,28 +185,28 @@ namespace PianoMentor.DAL.Migrations
         {
             migrationBuilder.DropTable(
                 name: "QuizQuestionsUsersAnswersLogs",
-                schema: "FileManager");
+                schema: "PianoMentor");
 
             migrationBuilder.DropTable(
                 name: "QuizQuestionsAnswers",
-                schema: "FileManager");
+                schema: "PianoMentor");
 
             migrationBuilder.DropTable(
                 name: "QuizQuestions",
-                schema: "FileManager");
+                schema: "PianoMentor");
 
             migrationBuilder.DropTable(
                 name: "QuizQuestionsTypes",
-                schema: "FileManager");
+                schema: "PianoMentor");
 
             migrationBuilder.DropIndex(
                 name: "IX_CourseItems_AttachedDataSetId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItems");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseItems_AttachedDataSetId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItems",
                 column: "AttachedDataSetId");
         }

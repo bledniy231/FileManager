@@ -77,31 +77,41 @@ namespace PianoMentor.BLL.Quizzes
 			int countOfUserCorrectQuestions = 0;
 			List<string> errors = [];
 
-			foreach (var userQuestionWithAnswers in request.QuestionsWithUserAnswers)
+			foreach (var userQuestion in request.QuestionsWithUserAnswers)
 			{
-				var neededQuestion = questionsFromDb.FirstOrDefault(q => q.QuestionId == userQuestionWithAnswers.QuestionId);
-				if (neededQuestion == null)
+				var dbQuestion = questionsFromDb.FirstOrDefault(q => q.QuestionId == userQuestion.QuestionId);
+				if (dbQuestion == null)
 				{
-					errors.Add($"Question with id {userQuestionWithAnswers.QuestionId} not found");
+					errors.Add($"Question with id {userQuestion.QuestionId} not found");
 					continue;
 				}
-				if (neededQuestion.QuizQuestionsAnswers.Where(a => a.IsCorrect).Count() != userQuestionWithAnswers.Answers.Count(a => a.WasChosenByUser.HasValue && (bool)a.WasChosenByUser))
+				var dbCorrectAnswers = dbQuestion.QuizQuestionsAnswers.Where(a => a.IsCorrect && !a.IsDeleted).ToList();
+				if (dbCorrectAnswers.Count != userQuestion.Answers.Count(a => a.WasChosenByUser.HasValue && (bool)a.WasChosenByUser))
 				{
 					// Если количество ответов пользователя отличается от количества правильных ответов,
 					// то получается, что ответ пользователя уже неправильный, переходим к следующему вопросу
 					continue;
 				}
 
-				int countOfUserCorrectQuestionAnswers = 0;
-				foreach (var correctAnswer in neededQuestion.QuizQuestionsAnswers)
+				try
 				{
-					if (neededQuestion.QuizQuestionTypeId == (int)QuizQuestionTypeEnumeration.FreeText
-						&& correctAnswer.AnswerText.ToLowerInvariant()
-							.Equals(userQuestionWithAnswers.Answers.SingleOrDefault()?.UserAnswerText?.ToLowerInvariant() ?? ""))
+					if (dbQuestion.QuizQuestionTypeId == (int)QuizQuestionTypeEnumeration.FreeText
+						&& dbCorrectAnswers.Single().AnswerText.ToLowerInvariant()
+							.Equals(userQuestion.Answers.SingleOrDefault()?.UserAnswerText?.ToLowerInvariant() ?? ""))
 					{
 						countOfUserCorrectQuestions++;
+						continue;
 					}
-					else if (userQuestionWithAnswers.Answers.Any(a => a.AnswerId == correctAnswer.AnswerId && a.WasChosenByUser.HasValue && (bool)a.WasChosenByUser))
+				}
+				catch (Exception ex)
+				{
+					return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnumaration.NotStarted.ToString(), [ex.Message]);
+				}
+
+				int countOfUserCorrectQuestionAnswers = 0;
+				foreach (var dbCorrectAnswer in dbCorrectAnswers)
+				{
+					if (userQuestion.Answers.Any(a => a.AnswerId == dbCorrectAnswer.AnswerId && a.WasChosenByUser.HasValue && (bool)a.WasChosenByUser))
 					{
 						countOfUserCorrectQuestionAnswers++;
 					}
@@ -113,7 +123,7 @@ namespace PianoMentor.BLL.Quizzes
 					}
 				}
 
-				if (countOfUserCorrectQuestionAnswers == neededQuestion.QuizQuestionsAnswers.Count)
+				if (countOfUserCorrectQuestionAnswers == dbCorrectAnswers.Count)
 				{
 					countOfUserCorrectQuestions++;
 				}

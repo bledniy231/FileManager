@@ -145,7 +145,7 @@ namespace PianoMentor.Controllers
 		[HttpGet]
 		public async Task<IActionResult> DownloadQuizQuestionFile([FromQuery] long dataSetId)
 		{
-			var request = new DownloadFilesRequest(dataSetId, null, false);
+			var request = new DownloadFilesRequest(dataSetId, 0, false);
 			var response = await _mediator.Send(request);
 
 			if (!response.Errors.IsNullOrEmpty())
@@ -173,13 +173,17 @@ namespace PianoMentor.Controllers
 
 		[Authorize]
 		[HttpPost]
-		public async Task<IActionResult> UploadQuestionImage([FromBody] UploadQuestionImageRequest request)
+		[Consumes("multipart/form-data")]
+		[DisableRequestSizeLimit]
+		[DisableFormValueModelBinding]
+		public async Task<IActionResult> UploadQuestionImage([FromQuery] long userId, int questionId)
 		{
 			if (!_controllersHelper.IsUserAdmin(User, out long _))
 			{
 				return Unauthorized("You aren't administrator");
 			}
 
+			var request = new UploadQuestionImageRequest(userId, questionId, Request.ContentType, Request.Body);
 			return await _controllersHelper.SendRequet<UploadQuestionImageRequest, DefaultResponse>(request);
 		}
 	}

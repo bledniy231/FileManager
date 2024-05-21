@@ -13,84 +13,84 @@ namespace PianoMentor.DAL.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_UsersCoursesItemsProgresses_AspNetUsers_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesItemsProgresses");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_UsersCoursesItemsProgresses_CourseItemsProgressTypes_CourseItemProgressTypeId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesItemsProgresses");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_UsersCoursesItemsProgresses_CourseItems_CourseItemId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesItemsProgresses");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_UsersCoursesProgresses_AspNetUsers_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesProgresses");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_UsersCoursesProgresses_Courses_CourseId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesProgresses");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_UsersCoursesProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesProgresses");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_UsersCoursesItemsProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesItemsProgresses");
 
             migrationBuilder.RenameTable(
                 name: "UsersCoursesProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 newName: "CourseUsersProgresses",
-                newSchema: "FileManager");
+                newSchema: "PianoMentor");
 
             migrationBuilder.RenameTable(
                 name: "UsersCoursesItemsProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 newName: "CourseItemsUsersProgresses",
-                newSchema: "FileManager");
+                newSchema: "PianoMentor");
 
             migrationBuilder.RenameIndex(
                 name: "IX_UsersCoursesProgresses_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseUsersProgresses",
                 newName: "IX_CourseUsersProgresses_UserId");
 
             migrationBuilder.RenameIndex(
                 name: "IX_UsersCoursesProgresses_CourseId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseUsersProgresses",
                 newName: "IX_CourseUsersProgresses_CourseId");
 
             migrationBuilder.RenameIndex(
                 name: "IX_UsersCoursesItemsProgresses_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses",
                 newName: "IX_CourseItemsUsersProgresses_UserId");
 
             migrationBuilder.RenameIndex(
                 name: "IX_UsersCoursesItemsProgresses_CourseItemProgressTypeId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses",
                 newName: "IX_CourseItemsUsersProgresses_CourseItemProgressTypeId");
 
             migrationBuilder.RenameIndex(
                 name: "IX_UsersCoursesItemsProgresses_CourseItemId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses",
                 newName: "IX_CourseItemsUsersProgresses_CourseItemId");
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedAt",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses",
                 type: "datetime2",
                 nullable: false,
@@ -98,61 +98,61 @@ namespace PianoMentor.DAL.Migrations
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_CourseUsersProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseUsersProgresses",
                 column: "Id");
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_CourseItemsUsersProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses",
                 column: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_CourseItemsUsersProgresses_AspNetUsers_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses",
                 column: "UserId",
-                principalSchema: "FileManager",
+                principalSchema: "PianoMentor",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_CourseItemsUsersProgresses_CourseItemsProgressTypes_CourseItemProgressTypeId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses",
                 column: "CourseItemProgressTypeId",
-                principalSchema: "FileManager",
+                principalSchema: "PianoMentor",
                 principalTable: "CourseItemsProgressTypes",
                 principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_CourseItemsUsersProgresses_CourseItems_CourseItemId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses",
                 column: "CourseItemId",
-                principalSchema: "FileManager",
+                principalSchema: "PianoMentor",
                 principalTable: "CourseItems",
                 principalColumn: "CourseItemId",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_CourseUsersProgresses_AspNetUsers_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseUsersProgresses",
                 column: "UserId",
-                principalSchema: "FileManager",
+                principalSchema: "PianoMentor",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_CourseUsersProgresses_Courses_CourseId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseUsersProgresses",
                 column: "CourseId",
-                principalSchema: "FileManager",
+                principalSchema: "PianoMentor",
                 principalTable: "Courses",
                 principalColumn: "CourseId",
                 onDelete: ReferentialAction.Cascade);
@@ -163,143 +163,143 @@ namespace PianoMentor.DAL.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_CourseItemsUsersProgresses_AspNetUsers_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_CourseItemsUsersProgresses_CourseItemsProgressTypes_CourseItemProgressTypeId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_CourseItemsUsersProgresses_CourseItems_CourseItemId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_CourseUsersProgresses_AspNetUsers_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseUsersProgresses");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_CourseUsersProgresses_Courses_CourseId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseUsersProgresses");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_CourseUsersProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseUsersProgresses");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_CourseItemsUsersProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses");
 
             migrationBuilder.DropColumn(
                 name: "CreatedAt",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "CourseItemsUsersProgresses");
 
             migrationBuilder.RenameTable(
                 name: "CourseUsersProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 newName: "UsersCoursesProgresses",
-                newSchema: "FileManager");
+                newSchema: "PianoMentor");
 
             migrationBuilder.RenameTable(
                 name: "CourseItemsUsersProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 newName: "UsersCoursesItemsProgresses",
-                newSchema: "FileManager");
+                newSchema: "PianoMentor");
 
             migrationBuilder.RenameIndex(
                 name: "IX_CourseUsersProgresses_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesProgresses",
                 newName: "IX_UsersCoursesProgresses_UserId");
 
             migrationBuilder.RenameIndex(
                 name: "IX_CourseUsersProgresses_CourseId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesProgresses",
                 newName: "IX_UsersCoursesProgresses_CourseId");
 
             migrationBuilder.RenameIndex(
                 name: "IX_CourseItemsUsersProgresses_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesItemsProgresses",
                 newName: "IX_UsersCoursesItemsProgresses_UserId");
 
             migrationBuilder.RenameIndex(
                 name: "IX_CourseItemsUsersProgresses_CourseItemProgressTypeId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesItemsProgresses",
                 newName: "IX_UsersCoursesItemsProgresses_CourseItemProgressTypeId");
 
             migrationBuilder.RenameIndex(
                 name: "IX_CourseItemsUsersProgresses_CourseItemId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesItemsProgresses",
                 newName: "IX_UsersCoursesItemsProgresses_CourseItemId");
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_UsersCoursesProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesProgresses",
                 column: "Id");
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_UsersCoursesItemsProgresses",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesItemsProgresses",
                 column: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_UsersCoursesItemsProgresses_AspNetUsers_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesItemsProgresses",
                 column: "UserId",
-                principalSchema: "FileManager",
+                principalSchema: "PianoMentor",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_UsersCoursesItemsProgresses_CourseItemsProgressTypes_CourseItemProgressTypeId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesItemsProgresses",
                 column: "CourseItemProgressTypeId",
-                principalSchema: "FileManager",
+                principalSchema: "PianoMentor",
                 principalTable: "CourseItemsProgressTypes",
                 principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_UsersCoursesItemsProgresses_CourseItems_CourseItemId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesItemsProgresses",
                 column: "CourseItemId",
-                principalSchema: "FileManager",
+                principalSchema: "PianoMentor",
                 principalTable: "CourseItems",
                 principalColumn: "CourseItemId",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_UsersCoursesProgresses_AspNetUsers_UserId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesProgresses",
                 column: "UserId",
-                principalSchema: "FileManager",
+                principalSchema: "PianoMentor",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_UsersCoursesProgresses_Courses_CourseId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "UsersCoursesProgresses",
                 column: "CourseId",
-                principalSchema: "FileManager",
+                principalSchema: "PianoMentor",
                 principalTable: "Courses",
                 principalColumn: "CourseId",
                 onDelete: ReferentialAction.Cascade);

@@ -12,8 +12,8 @@ using PianoMentor.DAL;
 namespace PianoMentor.DAL.Migrations
 {
     [DbContext(typeof(PianoMentorDbContext))]
-    [Migration("20240511123704_InsertQuizTypesValues")]
-    partial class InsertQuizTypesValues
+    [Migration("20240521083007_ChangeColumnFileNameBinaries")]
+    partial class ChangeColumnFileNameBinaries
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -184,8 +184,8 @@ namespace PianoMentor.DAL.Migrations
                     b.Property<string>("Filename")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<long>("Length")
                         .HasColumnType("bigint");
@@ -532,6 +532,9 @@ namespace PianoMentor.DAL.Migrations
                     b.Property<int>("CourseItemProgressTypeId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
@@ -543,7 +546,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsersCoursesItemsProgresses", "PianoMentor");
+                    b.ToTable("CourseItemsUsersProgresses", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseUserProgress", b =>
@@ -569,7 +572,7 @@ namespace PianoMentor.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsersCoursesProgresses", "PianoMentor");
+                    b.ToTable("CourseUsersProgresses", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestion", b =>

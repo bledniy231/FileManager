@@ -12,7 +12,7 @@ namespace PianoMentor.DAL.Migrations
         {
             migrationBuilder.CreateTable(
                 name: "ViewPagerTexts",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -29,7 +29,7 @@ namespace PianoMentor.DAL.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ViewPagerTextNumberRanges",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -43,7 +43,7 @@ namespace PianoMentor.DAL.Migrations
                     table.ForeignKey(
                         name: "FK_ViewPagerTextNumberRanges_ViewPagerTexts_ViewPagerTextId",
                         column: x => x.ViewPagerTextId,
-                        principalSchema: "FileManager",
+                        principalSchema: "PianoMentor",
                         principalTable: "ViewPagerTexts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -51,7 +51,7 @@ namespace PianoMentor.DAL.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_ViewPagerTextNumberRanges_ViewPagerTextId",
-                schema: "FileManager",
+                schema: "PianoMentor",
                 table: "ViewPagerTextNumberRanges",
                 column: "ViewPagerTextId");
         }
@@ -61,11 +61,11 @@ namespace PianoMentor.DAL.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ViewPagerTextNumberRanges",
-                schema: "FileManager");
+                schema: "PianoMentor");
 
             migrationBuilder.DropTable(
                 name: "ViewPagerTexts",
-                schema: "FileManager");
+                schema: "PianoMentor");
         }
     }
 }

@@ -33,7 +33,7 @@ namespace PianoMentor.DAL
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
-			builder.HasDefaultSchema("FileManager");
+			builder.HasDefaultSchema("PianoMentor");
 
 			builder.Entity<PianoMentorUser>(e =>
 			{
@@ -65,7 +65,7 @@ namespace PianoMentor.DAL
 
 				e.HasKey(p => new { p.DataSetId, p.DataId }).IsClustered();
 
-				e.Property(p => p.Filename).IsUnicode(false).HasMaxLength(255).IsRequired();
+				e.Property(p => p.Filename).IsUnicode(true).HasMaxLength(255).IsRequired();
 			});
 
 			builder.Entity<Domain.DataSet.Storage>(e =>
