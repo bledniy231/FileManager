@@ -1,27 +1,17 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using PianoMentor.Contract.Courses;
 using PianoMentor.Contract.Files;
 using PianoMentor.DAL;
 
 namespace PianoMentor.BLL.Couses
 {
-	internal class DownloadCourseItemFileHandler(
-		PianoMentorDbContext dbContext,
-		IConfiguration config) : IRequestHandler<DownloadCourseItemFileRequest, DownloadFilesResponse>
+	internal class DownloadCourseItemFileHandler(PianoMentorDbContext dbContext) : IRequestHandler<DownloadCourseItemFileRequest, DownloadFilesResponse>
 	{
 		private readonly PianoMentorDbContext _dbContext = dbContext;
-		private readonly string _basePathForTempFiles = config.GetValue<string>("BasePathForTempFiles")
-			?? throw new ArgumentNullException("Cannot find base path for temp files from configuration");
 
 		public async Task<DownloadFilesResponse> Handle(DownloadCourseItemFileRequest request, CancellationToken cancellationToken)
 		{
-			if (!Directory.Exists(_basePathForTempFiles))
-			{
-				Directory.CreateDirectory(_basePathForTempFiles);
-			}
-
 			var courseAttach = await _dbContext.CourseItems
 				.AsNoTracking()
 				.Include(ci => ci.AttachedDataSet)

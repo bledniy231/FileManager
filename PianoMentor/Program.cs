@@ -20,7 +20,6 @@ namespace PianoMentor
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
-			//builder.WebHost.ConfigureCertificate();
 			builder.Services.AddControllers().AddNewtonsoftJson(options =>
 			{
 				options.SerializerSettings.Converters.Add(new CustomDateTimeConverter());
@@ -67,7 +66,6 @@ namespace PianoMentor
 			{
 				options.Limits.MaxRequestBodySize = int.MaxValue;
 				options.AllowSynchronousIO = true;
-				//options.ConfigureHttpsDefaults(opt => opt.ClientCertificateMode = ClientCertificateMode.RequireCertificate);
 			});
 
 			var app = builder.Build();

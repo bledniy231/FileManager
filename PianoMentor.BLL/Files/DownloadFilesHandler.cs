@@ -1,8 +1,8 @@
-﻿using PianoMentor.Contract.Files;
-using PianoMentor.DAL;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PianoMentor.Contract.Files;
+using PianoMentor.DAL;
 using System.IO.Compression;
 
 namespace PianoMentor.BLL.Files
@@ -13,7 +13,7 @@ namespace PianoMentor.BLL.Files
 		: IRequestHandler<DownloadFilesRequest, DownloadFilesResponse>
 	{
 		private readonly PianoMentorDbContext _dbContext = dbContext;
-		private readonly string _basePathForTempFiles = config.GetValue<string>("BasePathForTempFiles") 
+		private readonly string _baseDirNameForTempFiles = config.GetValue<string>("BaseDirNameForTempFiles") 
 			?? throw new ArgumentNullException("Cannot find base path for temp files from configuration");
 
 		public async Task<DownloadFilesResponse> Handle(DownloadFilesRequest request, CancellationToken cancellationToken)
@@ -21,11 +21,6 @@ namespace PianoMentor.BLL.Files
 			if (!request.IsZipArchiveResponse && request.DataId == null)
 			{
 				return new DownloadFilesResponse(null, null, null, ["Cannot download whole data set without a zip archive, change flag IsZipArchiveResponse=true"]);
-			}
-
-			if (!Directory.Exists(_basePathForTempFiles))
-			{
-				Directory.CreateDirectory(_basePathForTempFiles);
 			}
 
 			if (request.DataId != null)
@@ -46,13 +41,19 @@ namespace PianoMentor.BLL.Files
 					return new DownloadFilesResponse(null, null, null, [$"Cannot find a physical file from data set \'{request.DataSetId}\' with data id \'{request.DataId}\'"]);
 				}
 
+				string basePathForTempFiles = Path.Combine(Directory.GetParent(binary.DataSet.Storage.BasePath).FullName, _baseDirNameForTempFiles);
+				if (!Directory.Exists(basePathForTempFiles))
+				{
+					Directory.CreateDirectory(basePathForTempFiles);
+				}
+
 				try
 				{
 					if (request.IsZipArchiveResponse)
 					{
 						return CreateResponse(() =>
 						{
-							string tempZipPath = Path.Combine(_basePathForTempFiles, $"{Guid.NewGuid()}_{request.DataSetId}_{request.DataId}.zip");
+							string tempZipPath = Path.Combine(basePathForTempFiles, $"{Guid.NewGuid()}_{request.DataSetId}_{request.DataId}.zip");
 							var zipMode = ZipArchiveMode.Create;
 							if (File.Exists(tempZipPath))
 							{
@@ -88,11 +89,17 @@ namespace PianoMentor.BLL.Files
 					return new DownloadFilesResponse(null, null, null, [$"Cannot find a data set in DB from data set '{request.DataSetId}'"]);
 				}
 
+				string basePathForTempFiles = Path.Combine(Directory.GetParent(dataSet.Storage.BasePath).FullName, _baseDirNameForTempFiles);
+				if (!Directory.Exists(basePathForTempFiles))
+				{
+					Directory.CreateDirectory(basePathForTempFiles);
+				}
+
 				try
 				{
 					return CreateResponse(() =>
 					{
-						string tempZipPath = Path.Combine(_basePathForTempFiles, $"{Guid.NewGuid()}_{request.DataSetId}.zip");
+						string tempZipPath = Path.Combine(basePathForTempFiles, $"{Guid.NewGuid()}_{request.DataSetId}.zip");
 						string dataSetDirName = dataSet.GetDataSetDirectory();
 						ZipFile.CreateFromDirectory(dataSetDirName, tempZipPath);
 						return tempZipPath;

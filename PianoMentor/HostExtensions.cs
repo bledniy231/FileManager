@@ -87,30 +87,5 @@ namespace PianoMentor
 			.AddDefaultTokenProviders()
 			.AddUserManager<UserManager<PianoMentorUser>>()
 			.AddSignInManager<SignInManager<PianoMentorUser>>();
-
-		public static void ConfigureCertificate(this IWebHostBuilder webBuilder)
-		{
-			var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
-			store.Open(OpenFlags.ReadOnly);
-			var certificate = store.Certificates.Where(c => c.FriendlyName.Equals("For project of Egor Seryakov's diploma")).FirstOrDefault()
-				?? throw new ArgumentException("Certificate not found");
-
-
-			webBuilder.UseKestrel(options =>
-			{
-				options.Listen(System.Net.IPAddress.Loopback, 44321, listenOptions =>
-				{
-					var connectionOptions = new HttpsConnectionAdapterOptions
-					{
-						ServerCertificate = certificate,
-						//ServerCertificateChain = new X509Certificate2Collection(certificate),
-						//ClientCertificateMode = ClientCertificateMode.AllowCertificate,
-						//ClientCertificateValidation = (certificate, chain, errors) => errors == SslPolicyErrors.None
-					};
-
-					listenOptions.UseHttps(connectionOptions);
-				});
-			});
-		}
 	}
 }
