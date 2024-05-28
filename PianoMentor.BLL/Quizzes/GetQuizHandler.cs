@@ -8,11 +8,9 @@ namespace PianoMentor.BLL.Quizzes
 {
 	internal class GetQuizHandler(PianoMentorDbContext dbContext) : IRequestHandler<GetQuizRequest, GetQuizResponse>
 	{
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-
 		public async Task<GetQuizResponse> Handle(GetQuizRequest request, CancellationToken cancellationToken)
 		{
-			var questions = _dbContext.QuizQuestions
+			var questions = dbContext.QuizQuestions
 				.AsNoTracking()
 				.Where(q => q.CourseItemId == request.CourseItemId && !q.IsDeleted)
 				.Select(q => new QuizQuestionModel
@@ -35,12 +33,12 @@ namespace PianoMentor.BLL.Quizzes
 				.ToList();
 
 			var allAnswersIds = questions.SelectMany(q => q.Answers.Select(a => a.AnswerId)).ToList();
-			var lastUserAnswers = await _dbContext.QuizQuestionUserAnswerLogs
+			var lastUserAnswers = await dbContext.QuizQuestionUserAnswerLogs
 				.AsNoTracking()
 				.Where(al =>
 					al.UserId == request.UserId
 					&& allAnswersIds.Contains(al.AnswerId)
-					&& al.AnsweredAt == _dbContext.QuizQuestionUserAnswerLogs
+					&& al.AnsweredAt == dbContext.QuizQuestionUserAnswerLogs
 						.Where(al2 => al2.UserId == request.UserId)
 						.Max(al2 => al2.AnsweredAt))
 				.ToListAsync(cancellationToken);

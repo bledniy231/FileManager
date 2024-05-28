@@ -1,5 +1,4 @@
-﻿using PianoMentor.DAL.Domain.Identity;
-using PianoMentor.DAL;
+﻿using PianoMentor.DAL;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
+using PianoMentor.DAL.Models.Identity;
 
 namespace PianoMentor
 {
@@ -78,10 +78,10 @@ namespace PianoMentor
 			{
 				options.User.RequireUniqueEmail = true;
 				options.Password.RequireNonAlphanumeric = false;
-				options.Password.RequireDigit = false;
+				options.Password.RequireDigit = true;
 				options.Password.RequireLowercase = true;
 				options.Password.RequireUppercase = true;
-				options.Password.RequiredLength = 5; 
+				options.Password.RequiredLength = 6; 
 			})
 			.AddEntityFrameworkStores<PianoMentorDbContext>()
 			.AddDefaultTokenProviders()

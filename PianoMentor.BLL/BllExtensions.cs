@@ -1,4 +1,4 @@
-﻿namespace PianoMentor
+﻿namespace PianoMentor.BLL
 {
 	public static class BllExtensions
 	{

@@ -1,6 +1,6 @@
 ﻿namespace PianoMentor.Contract.Models.PianoMentor.Courses
 {
-    public enum CourseItemProgressTypesEnumaration : int
+    public enum CourseItemProgressTypesEnum : int
     {
         NotStarted = 1,
         InProgress = 2,

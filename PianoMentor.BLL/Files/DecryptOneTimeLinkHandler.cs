@@ -1,9 +1,7 @@
-﻿using PianoMentor.BLL.CryptoLinkManager;
-using PianoMentor.Contract.Files;
+﻿using System.Globalization;
 using MediatR;
-using System.Globalization;
-using System.Net;
-using System.Web;
+using PianoMentor.BLL.CryptoLinkManager;
+using PianoMentor.Contract.Files;
 
 namespace PianoMentor.BLL.Files
 {
@@ -11,8 +9,6 @@ namespace PianoMentor.BLL.Files
 		ICryptoLinkManager downloadLinkManager)
 		: IRequestHandler<DecryptOneTimeLinkRequest, DecryptOneTimeLinkResponse>
 	{
-		private readonly ICryptoLinkManager _cryptoLinkManager = downloadLinkManager;
-
 		public async Task<DecryptOneTimeLinkResponse> Handle(DecryptOneTimeLinkRequest request, CancellationToken cancellationToken)
 		{
 			string encryptedFromHttpToken;
@@ -20,7 +16,7 @@ namespace PianoMentor.BLL.Files
 			try
 			{
 				encryptedFromHttpToken = Uri.UnescapeDataString(request.EncryptedToken);
-				decryptedToken = await _cryptoLinkManager.DecryptAsync(encryptedFromHttpToken);
+				decryptedToken = await downloadLinkManager.DecryptAsync(encryptedFromHttpToken);
 			}
 			catch (Exception ex)
 			{

@@ -10,16 +10,14 @@ namespace PianoMentor.BLL.Couses
 {
 	internal class CheckIfCourseItemExistsHandler(PianoMentorDbContext dbContext) : IRequestHandler<CheckIfCourseItemExistsRequest, DefaultResponse>
 	{
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-
 		public Task<DefaultResponse> Handle(CheckIfCourseItemExistsRequest request, CancellationToken cancellationToken)
 		{
-			if (!Enum.IsDefined(typeof(CourseItemTypesEnumeration), request.CourseItemTypeId))
+			if (!Enum.IsDefined(typeof(CourseItemTypesEnum), request.CourseItemTypeId))
 			{
 				return Task.FromResult(new DefaultResponse(["Course item type id is incorrect"]));
 			}
 
-			var existsInDb = _dbContext.CourseItems.Any(x =>
+			var existsInDb = dbContext.CourseItems.Any(x =>
 				x.CourseItemId == request.CourseItemId
 				&& x.CourseItemTypeId == request.CourseItemTypeId
 				&& !x.IsDeleted);

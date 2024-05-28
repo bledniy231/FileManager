@@ -1,6 +1,6 @@
 ﻿namespace PianoMentor.Contract.Models.PianoMentor.Courses
 {
-    public enum CourseItemTypesEnumeration : int
+    public enum CourseItemTypesEnum : int
     {
         Lecture = 1,
         Exercise = 2,

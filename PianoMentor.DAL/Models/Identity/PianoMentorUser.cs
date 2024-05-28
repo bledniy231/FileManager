@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace PianoMentor.DAL.Domain.Identity
+namespace PianoMentor.DAL.Models.Identity
 {
 	public class PianoMentorUser : IdentityUser<long>
 	{
@@ -8,6 +8,6 @@ namespace PianoMentor.DAL.Domain.Identity
 		public string? RefreshToken { get; set; }
 		public DateTime RefreshTokenExpireTime { get; set; }
 		public bool IsDeleted { get; set; }
-		public ICollection<DataSet.DataSet> DataSets { get; set; }
+		public ICollection<Domain.DataSet.DataSet> DataSets { get; set; }
 	}
 }

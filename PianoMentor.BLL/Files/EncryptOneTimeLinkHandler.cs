@@ -12,9 +12,6 @@ namespace PianoMentor.BLL.Files
 		ICryptoLinkManager downloadLinkManager)
 		: IRequestHandler<EncryptOneTimeLinkRequest, EncryptOneTimeLinkResponse>
 	{
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-		private readonly ICryptoLinkManager _cryptoLinkManager = downloadLinkManager;
-
 		public async Task<EncryptOneTimeLinkResponse> Handle(EncryptOneTimeLinkRequest request, CancellationToken cancellationToken)
 		{
 			var expTime = DateTime.UtcNow.AddDays(1);
@@ -24,7 +21,7 @@ namespace PianoMentor.BLL.Files
 			string? urlEncryptedToken;
 			try
 			{
-				encryptedToken = await _cryptoLinkManager.EncryptAsync(plainTextToEncrypt);
+				encryptedToken = await downloadLinkManager.EncryptAsync(plainTextToEncrypt);
 				urlEncryptedToken = Uri.EscapeDataString(encryptedToken);
 			}
 			catch (Exception ex)
@@ -32,7 +29,7 @@ namespace PianoMentor.BLL.Files
 				return new EncryptOneTimeLinkResponse(null, expTime, [ex.Message]);
 			}
 
-			_dbContext.OneTimeLinks.Add(new DAL.Domain.DataSet.OneTimeLink
+			dbContext.OneTimeLinks.Add(new DAL.Domain.DataSet.OneTimeLink
 			{
 				LinkExpirationTime = expTime,
 				UrlEncryptedToken = urlEncryptedToken
@@ -40,7 +37,7 @@ namespace PianoMentor.BLL.Files
 
 			try
 			{
-				await _dbContext.SaveChangesAsync(cancellationToken);
+				await dbContext.SaveChangesAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{

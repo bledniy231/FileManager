@@ -8,8 +8,6 @@ namespace PianoMentor.Controllers
 {
 	public class ControllersHelper(IServiceProvider serviceProvider) : ControllerBase
 	{
-		private readonly IServiceProvider _serviceProvider = serviceProvider;
-
 		public bool IsUserAdmin(ClaimsPrincipal user, out long userId)
 		{
 			var userRoles = user.FindFirstValue(ClaimTypes.Role)?.Split(' ');
@@ -38,11 +36,11 @@ namespace PianoMentor.Controllers
 			return userIdFromClaims != null && long.TryParse(userIdFromClaims, out long parsedUserId) && parsedUserId == userId;
 		}
 
-		public async Task<IActionResult> SendRequet<TRequest, TResponse>(TRequest request)
+		public async Task<IActionResult> SendRequest<TRequest, TResponse>(TRequest request)
 			where TRequest : IRequest<TResponse>
 			where TResponse : DefaultResponse
 		{
-			using var scope = _serviceProvider.CreateScope();
+			using var scope = serviceProvider.CreateScope();
 			var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 			var response = await mediator.Send(request);
 			if (!response.Errors.IsNullOrEmpty())

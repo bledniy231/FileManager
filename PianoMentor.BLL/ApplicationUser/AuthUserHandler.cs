@@ -1,9 +1,9 @@
 ﻿using PianoMentor.BLL.TokenService;
 using PianoMentor.Contract.ApplicationUser;
-using PianoMentor.DAL.Domain.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using PianoMentor.DAL.Models.Identity;
 
 namespace PianoMentor.BLL.ApplicationUser
 {
@@ -13,13 +13,9 @@ namespace PianoMentor.BLL.ApplicationUser
 		IConfiguration config) 
 		: IRequestHandler<AuthUserRequest, AuthUserResponse>
 	{
-		private readonly UserManager<PianoMentorUser> _userManager = userManager;
-		private readonly ITokenService _tokenService = tokenService;
-		private readonly IConfiguration _config = config;
-
 		public async Task<AuthUserResponse> Handle(AuthUserRequest request, CancellationToken cancellationToken)
 		{
-			var managedUser = await _userManager.FindByEmailAsync(request.Email);
+			var managedUser = await userManager.FindByEmailAsync(request.Email);
 			if (managedUser == null)
 			{
 				return new AuthUserResponse
@@ -28,7 +24,7 @@ namespace PianoMentor.BLL.ApplicationUser
 				};
 			}
 
-			if (!await _userManager.CheckPasswordAsync(managedUser, request.Password))
+			if (!await userManager.CheckPasswordAsync(managedUser, request.Password))
 			{
 				return new AuthUserResponse
 				{
@@ -36,13 +32,13 @@ namespace PianoMentor.BLL.ApplicationUser
 				};
 			}
 
-			var roles = await _userManager.GetRolesAsync(managedUser);
+			var roles = await userManager.GetRolesAsync(managedUser);
 
-			var (accessToken, accessTokenExpiryDateTime) = _tokenService.CreateAccessToken(managedUser, roles);
-			managedUser.RefreshToken = _tokenService.CreateRefreshToken();
-			managedUser.RefreshTokenExpireTime = DateTime.UtcNow.AddDays(_config.GetSection("Jwt:RefreshTokenValidityInDays").Get<int>());
+			var (accessToken, accessTokenExpiryDateTime) = tokenService.CreateAccessToken(managedUser, roles);
+			managedUser.RefreshToken = tokenService.CreateRefreshToken();
+			managedUser.RefreshTokenExpireTime = DateTime.UtcNow.AddDays(config.GetSection("Jwt:RefreshTokenValidityInDays").Get<int>());
 
-			var updatingResult = await _userManager.UpdateAsync(managedUser);
+			var updatingResult = await userManager.UpdateAsync(managedUser);
 
 			if (!updatingResult.Succeeded)
 			{

@@ -8,8 +8,6 @@ namespace PianoMentor.BLL.Quizzes
 {
 	internal class SetNewQuizHandler(PianoMentorDbContext dbContext) : IRequestHandler<SetNewQuizRequest, DefaultResponse>
 	{
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-
 		public Task<DefaultResponse> Handle(SetNewQuizRequest request, CancellationToken cancellationToken)
 		{
 			var updatedAt = DateTime.UtcNow;
@@ -31,8 +29,8 @@ namespace PianoMentor.BLL.Quizzes
 
 			try
 			{
-				_dbContext.QuizQuestions.AddRange(questionsDb);
-				_dbContext.SaveChanges();
+				dbContext.QuizQuestions.AddRange(questionsDb);
+				dbContext.SaveChanges();
 			}
 			catch (Exception ex)
 			{

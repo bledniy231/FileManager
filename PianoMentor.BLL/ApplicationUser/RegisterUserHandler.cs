@@ -1,7 +1,7 @@
 ﻿using PianoMentor.Contract.ApplicationUser;
-using PianoMentor.DAL.Domain.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using PianoMentor.DAL.Models.Identity;
 
 namespace PianoMentor.BLL.ApplicationUser
 {
@@ -10,9 +10,6 @@ namespace PianoMentor.BLL.ApplicationUser
 		RoleManager<IdentityRole<long>> roleManager) 
 		: IRequestHandler<RegisterUserRequest, RegisterUserResponse>
 	{
-		private readonly UserManager<PianoMentorUser> _userManager = userManager;
-		private readonly RoleManager<IdentityRole<long>> _roleManager = roleManager;
-
 		public async Task<RegisterUserResponse> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
 		{
 			if (!request.Password.Equals(request.PasswordConfirm))
@@ -29,7 +26,7 @@ namespace PianoMentor.BLL.ApplicationUser
 				UserName = request.UserName
 			};
 
-			var identityResult = await _userManager.CreateAsync(user, request.Password);
+			var identityResult = await userManager.CreateAsync(user, request.Password);
 
 			if (!identityResult.Succeeded)
 			{
@@ -41,13 +38,13 @@ namespace PianoMentor.BLL.ApplicationUser
 
 			foreach (var roleName in request.Roles)
 			{
-				if (await _roleManager.RoleExistsAsync(roleName))
+				if (await roleManager.RoleExistsAsync(roleName))
 				{
-					await _userManager.AddToRoleAsync(user, roleName);
+					await userManager.AddToRoleAsync(user, roleName);
 				}
 				else
 				{
-					await _userManager.DeleteAsync(user);
+					await userManager.DeleteAsync(user);
 
 					return new RegisterUserResponse
 					{

@@ -10,17 +10,15 @@ namespace PianoMentor.BLL.Files
 		PianoMentorDbContext dbContext) 
 		: IRequestHandler<DeleteOneTimeLinkFromDbRequest, Unit>
 	{
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-
 		public async Task<Unit> Handle(DeleteOneTimeLinkFromDbRequest request, CancellationToken cancellationToken)
 		{
 			string encToken = HttpUtility.UrlEncode(request.UrlEncryptedToken.ToString());
 
-			var oneTimeLink = await _dbContext.OneTimeLinks
+			var oneTimeLink = await dbContext.OneTimeLinks
 				.FirstAsync(ol => ol.UrlEncryptedToken.Equals(encToken), cancellationToken);
 
-			_dbContext.OneTimeLinks.Remove(oneTimeLink);
-			await _dbContext.SaveChangesAsync(cancellationToken);
+			dbContext.OneTimeLinks.Remove(oneTimeLink);
+			await dbContext.SaveChangesAsync(cancellationToken);
 
 			return Unit.Value;
 		}

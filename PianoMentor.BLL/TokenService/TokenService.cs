@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using PianoMentor.DAL.Models.Identity;
 
 namespace PianoMentor.BLL.TokenService
 {
@@ -16,21 +17,17 @@ namespace PianoMentor.BLL.TokenService
 		IDistributedCache cache,
 		IHttpContextAccessor httpContextAccessor) : ITokenService
 	{
-		private readonly IConfiguration _config = config;
-		private readonly IDistributedCache _cache = cache;
-		private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-
-		public (string token, DateTime accessTokenExpiry) CreateAccessToken(DAL.Domain.Identity.PianoMentorUser user, IEnumerable<string> userRoles)
+		public (string token, DateTime accessTokenExpiry) CreateAccessToken(PianoMentorUser user, IEnumerable<string> userRoles)
 		{
 			var (token, accessTokenExpiry) = CreateJwtToken(user, userRoles);
 			var tokenHandler = new JwtSecurityTokenHandler();
 			return (tokenHandler.WriteToken(token), accessTokenExpiry);
 		}
 
-		private (JwtSecurityToken token, DateTime accessTokenExpiry) CreateJwtToken(DAL.Domain.Identity.PianoMentorUser user, IEnumerable<string> userRoles)
+		private (JwtSecurityToken token, DateTime accessTokenExpiry) CreateJwtToken(PianoMentorUser user, IEnumerable<string> userRoles)
 		{
-			var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]!));
-			int expirationTimeInMin = _config.GetSection("Jwt:Expire").Get<int>();
+			var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Secret"]!));
+			int expirationTimeInMin = config.GetSection("Jwt:Expire").Get<int>();
 			var expiryDateTime = DateTime.UtcNow.AddMinutes(expirationTimeInMin);
 			var claims = new List<Claim> 
 			{
@@ -41,8 +38,8 @@ namespace PianoMentor.BLL.TokenService
 			};
 
 			return (new JwtSecurityToken(
-				_config["Jwt:Issuer"],
-				_config["Jwt:Audience"],
+				config["Jwt:Issuer"],
+				config["Jwt:Audience"],
 				claims: claims,
 				expires: expiryDateTime,
 				signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)),
@@ -67,7 +64,7 @@ namespace PianoMentor.BLL.TokenService
 				ValidateIssuer = false,
 				ValidateIssuerSigningKey = true,
 				ValidateLifetime = false,
-				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]!))
+				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Secret"]!))
 			};
 
 			var tokenHandler = new JwtSecurityTokenHandler();
@@ -89,18 +86,18 @@ namespace PianoMentor.BLL.TokenService
 			=> DeactivateUserToken(GetCurrentUserToken());
 
 		public bool IsActiveUserToken(string token)
-			=> _cache.GetString(GetCacheKey(token)) == null;
+			=> cache.GetString(GetCacheKey(token)) == null;
 
 		public void DeactivateUserToken(string token)
-			=> _cache.SetString(GetCacheKey(token),
+			=> cache.SetString(GetCacheKey(token),
 				" ", new DistributedCacheEntryOptions
 				{
-					AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_config.GetSection("Jwt:Expire").Get<int>())
+					AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(config.GetSection("Jwt:Expire").Get<int>())
 				});
 
 		private string GetCurrentUserToken()
 		{
-			var authorizationHeader = _httpContextAccessor.HttpContext?.Request.Headers.Authorization;
+			var authorizationHeader = httpContextAccessor.HttpContext?.Request.Headers.Authorization;
 
 			if (!authorizationHeader.HasValue)
 			{

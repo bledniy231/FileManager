@@ -12,9 +12,8 @@ namespace PianoMentor.BLL.Files
 		IConfiguration config)
 		: IRequestHandler<DownloadFilesRequest, DownloadFilesResponse>
 	{
-		private readonly PianoMentorDbContext _dbContext = dbContext;
 		private readonly string _baseDirNameForTempFiles = config.GetValue<string>("BaseDirNameForTempFiles") 
-			?? throw new ArgumentNullException("Cannot find base path for temp files from configuration");
+		                                                   ?? throw new ArgumentNullException("Cannot find base path for temp files from configuration");
 
 		public async Task<DownloadFilesResponse> Handle(DownloadFilesRequest request, CancellationToken cancellationToken)
 		{
@@ -25,7 +24,7 @@ namespace PianoMentor.BLL.Files
 
 			if (request.DataId != null)
 			{
-				var binary = await _dbContext.Binaries
+				var binary = await dbContext.Binaries
 					.AsNoTracking()
 					.Include(b => b.DataSet.Storage)
 					.FirstOrDefaultAsync(b => b.DataSetId == request.DataSetId && b.DataId == request.DataId, cancellationToken);
@@ -78,7 +77,7 @@ namespace PianoMentor.BLL.Files
 			}
 			else
 			{
-				var dataSet = await _dbContext.DataSets
+				var dataSet = await dbContext.DataSets
 					.AsNoTracking()
 					.Include(d => d.Binaries)
 					.Include(d => d.Storage)

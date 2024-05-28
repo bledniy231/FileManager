@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using PianoMentor.Contract.Default;
 
-namespace PianoMentor.Contract.Quizzes
+namespace PianoMentor.Contract.Files
 {
 	public class UploadQuestionImageRequest(long userId, int questionId, string? contentType, Stream body) : IRequest<DefaultResponse>
 	{

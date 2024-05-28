@@ -14,11 +14,9 @@ namespace PianoMentor.BLL.Statistics
 {
     internal class GetUserStatisticsHandler(PianoMentorDbContext dbContext) : IRequestHandler<GetUserStatisticsRequest, GetUserStatisticsResponse>
     {
-        private readonly PianoMentorDbContext _dbContext = dbContext;
-
         public Task<GetUserStatisticsResponse> Handle(GetUserStatisticsRequest request, CancellationToken cancellationToken)
         {
-            var coursesUserProgress = _dbContext.CourseUserProgresses
+            var coursesUserProgress = dbContext.CourseUserProgresses
                 .AsNoTracking()
                 .Where(cup => cup.UserId == request.UserId)
                 .Select(cup => new CourseUserProgressModel
@@ -30,11 +28,11 @@ namespace PianoMentor.BLL.Statistics
                 })
                 .ToList();
 
-            var completeCourseItemsCount = _dbContext.CourseItemUserProgresses
+            var completeCourseItemsCount = dbContext.CourseItemUserProgresses
                 .AsNoTracking()
                 .Where(ciup =>
                     ciup.UserId == request.UserId
-                    && ciup.CourseItemProgressTypeId == (int)CourseItemProgressTypesEnumaration.Completed)
+                    && ciup.CourseItemProgressTypeId == (int)CourseItemProgressTypesEnum.Completed)
                 .GroupBy(ciup => ciup.CourseItem.CourseItemTypeId)
                 .Select(g => new
                 {
@@ -43,7 +41,7 @@ namespace PianoMentor.BLL.Statistics
                 })
                 .ToList();
 
-            var courseItemsCount = _dbContext.CourseItems
+            var courseItemsCount = dbContext.CourseItems
                 .AsNoTracking()
                 .GroupBy(ci => ci.CourseItemTypeId)
                 .Select(g => new
@@ -62,7 +60,7 @@ namespace PianoMentor.BLL.Statistics
 
             try
             {
-                var quizViewPagerItem = _dbContext.ViewPagerTexts
+                var quizViewPagerItem = dbContext.ViewPagerTexts
                     .AsNoTracking()
                     .Where(vpt => vpt.Type == "Quiz"
                         && !vpt.IsDeleted
@@ -81,7 +79,7 @@ namespace PianoMentor.BLL.Statistics
 
                 var coursesValueAbsolute = coursesUserProgress.Count(cup => cup.ProgressInPercent == 100);
 
-                var courseViewPagerItem = _dbContext.ViewPagerTexts
+                var courseViewPagerItem = dbContext.ViewPagerTexts
                     .AsNoTracking()
                     .Where(vpt => vpt.Type == "Course"
                         && !vpt.IsDeleted
@@ -104,21 +102,21 @@ namespace PianoMentor.BLL.Statistics
                 {
                     ProgressValueAbsolute = lecturesCompletedCount,
                     ProgressValueInPercent = (int)Math.Round((double)lecturesCompletedCount / courseItemsCount.First(IsLecture).Count * 100),
-                    Title = WordsEndingsManager.GetSimpleEnding(CourseItemTypesEnumeration.Lecture, lecturesCompletedCount)
+                    Title = WordsEndingsManager.GetSimpleEnding(CourseItemTypesEnum.Lecture, lecturesCompletedCount)
                 };
 
                 var exerciseStatistics = new BaseStatisticsModel
                 {
                     ProgressValueAbsolute = exercisesCompletedCount,
                     ProgressValueInPercent = (int)Math.Round((double)exercisesCompletedCount / courseItemsCount.First(IsExercise).Count * 100),
-                    Title = WordsEndingsManager.GetSimpleEnding(CourseItemTypesEnumeration.Exercise, exercisesCompletedCount)
+                    Title = WordsEndingsManager.GetSimpleEnding(CourseItemTypesEnum.Exercise, exercisesCompletedCount)
                 };
 
                 var quizStatistics = new BaseStatisticsModel
                 {
                     ProgressValueAbsolute = quizzesCompletedCount,
                     ProgressValueInPercent = (int)Math.Round((double)quizzesCompletedCount / courseItemsCount.First(IsQuiz).Count * 100),
-                    Title = WordsEndingsManager.GetSimpleEnding(CourseItemTypesEnumeration.Quiz, quizzesCompletedCount)
+                    Title = WordsEndingsManager.GetSimpleEnding(CourseItemTypesEnum.Quiz, quizzesCompletedCount)
                 };
 
                 var currentCourse = coursesUserProgress.FirstOrDefault(cup => cup.ProgressInPercent != 100) ?? new CourseUserProgressModel() { CourseName = "Курс \"Введение\"", ProgressInPercent = 0 };
@@ -137,9 +135,9 @@ namespace PianoMentor.BLL.Statistics
             }
         }
 
-        private static bool IsLecture(dynamic anonObject) => anonObject.CourseItemTypeId == (int)CourseItemTypesEnumeration.Lecture;
-        private static bool IsExercise(dynamic anonObject) => anonObject.CourseItemTypeId == (int)CourseItemTypesEnumeration.Exercise;
-        private static bool IsQuiz(dynamic anonObject) => anonObject.CourseItemTypeId == (int)CourseItemTypesEnumeration.Quiz;
+        private static bool IsLecture(dynamic anonObject) => anonObject.CourseItemTypeId == (int)CourseItemTypesEnum.Lecture;
+        private static bool IsExercise(dynamic anonObject) => anonObject.CourseItemTypeId == (int)CourseItemTypesEnum.Exercise;
+        private static bool IsQuiz(dynamic anonObject) => anonObject.CourseItemTypeId == (int)CourseItemTypesEnum.Quiz;
 
         private static int GetPercentValue(int completedCount, int totalCount)
             => (int)Math.Round((double)completedCount / totalCount * 100);

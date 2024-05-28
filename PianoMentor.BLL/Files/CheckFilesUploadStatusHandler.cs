@@ -8,10 +8,8 @@ namespace PianoMentor.BLL.Files
 		IPercentageChecker percentageChecker)
 		: IRequestHandler<CheckFilesUploadStatusRequest, (int FilesCountAlreadyUploaded, float PercentageCurrentFile)?>
 	{
-		private readonly IPercentageChecker _percentageChecker = percentageChecker;
-
 		public Task<(int FilesCountAlreadyUploaded, float PercentageCurrentFile)?>
 			Handle(CheckFilesUploadStatusRequest request, CancellationToken cancellationToken)
-				=> Task.FromResult(_percentageChecker.GetPercentage(request.UserId));
+				=> Task.FromResult(percentageChecker.GetPercentage(request.UserId));
 	}
 }

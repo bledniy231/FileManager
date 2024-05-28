@@ -10,11 +10,9 @@ namespace PianoMentor.BLL.Couses
 {
 	internal class SetNewCourseViaAdminHandler(PianoMentorDbContext dbContext) : IRequestHandler<SetNewCoursesViaAdminRequest, DefaultResponse>
 	{
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-
 		public Task<DefaultResponse> Handle(SetNewCoursesViaAdminRequest request, CancellationToken cancellationToken)
 		{
-			var courseItemsTypes = Enum.GetValues<CourseItemTypesEnumeration>();
+			var courseItemsTypes = Enum.GetValues<CourseItemTypesEnum>();
 			if (courseItemsTypes == null || courseItemsTypes.Length == 0)
 			{
 				return Task.FromResult(new DefaultResponse(["Course item types not found"]));
@@ -38,11 +36,11 @@ namespace PianoMentor.BLL.Couses
 				})
 				.ToList();
 
-			_dbContext.Courses.AddRange(courses);
+			dbContext.Courses.AddRange(courses);
 
 			try
 			{
-				_dbContext.SaveChanges();
+				dbContext.SaveChanges();
 			}
 			catch (Exception e)
 			{

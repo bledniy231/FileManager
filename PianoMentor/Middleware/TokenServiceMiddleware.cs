@@ -5,11 +5,9 @@ namespace PianoMentor.Middleware
 {
 	public class TokenServiceMiddleware(ITokenService tokenManager) : IMiddleware
 	{
-		private readonly ITokenService _tokenService = tokenManager;
-
 		public async Task InvokeAsync(HttpContext context, RequestDelegate next)
 		{
-			if (_tokenService.IsCurrentUserActiveToken())
+			if (tokenManager.IsCurrentUserActiveToken())
 			{
 				await next(context);
 

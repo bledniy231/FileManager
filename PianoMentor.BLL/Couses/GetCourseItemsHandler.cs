@@ -8,13 +8,11 @@ namespace PianoMentor.BLL.Couses
 {
 	internal class GetCourseItemsHandler(PianoMentorDbContext dbContext) : IRequestHandler<GetCourseItemsRequest, GetCourseItemsResponse>
 	{
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-
 		public Task<GetCourseItemsResponse> Handle(GetCourseItemsRequest request, CancellationToken cancellationToken)
 		{
 			try
 			{
-				var courseItemsUserProgressesNames = _dbContext.CourseItemUserProgresses
+				var courseItemsUserProgressesNames = dbContext.CourseItemUserProgresses
 					.AsNoTracking()
 					.Where(ciup =>
 						ciup.UserId == request.UserId
@@ -27,7 +25,7 @@ namespace PianoMentor.BLL.Couses
 					})
 					.ToList();
 
-				var courseItems = _dbContext.CourseItems
+				var courseItems = dbContext.CourseItems
 					.AsNoTracking()
 					.Where(ci => ci.CourseId == request.CourseId)
 					.Select(ci => new

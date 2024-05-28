@@ -10,11 +10,9 @@ namespace PianoMentor.BLL.Files
 		PianoMentorDbContext dbContext) 
 		: IRequestHandler<GetListOfUploadedFilesRequest, GetListOfUploadedFilesResponse>
 	{
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-
 		public async Task<GetListOfUploadedFilesResponse> Handle(GetListOfUploadedFilesRequest request, CancellationToken cancellationToken)
 		{
-			var dataSets = await _dbContext.DataSets
+			var dataSets = await dbContext.DataSets
 				.AsNoTracking()
 				.Include(ds => ds.Binaries)
 				.Where(ds => ds.OwnerId == request.UserId)

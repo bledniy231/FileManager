@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PianoMentor.Contract.Models.PianoMentor.Courses;
 using PianoMentor.Contract.Models.PianoMentor.Quizzes;
-using PianoMentor.DAL.Domain.Identity;
 using PianoMentor.DAL.Domain.PianoMentor.Courses;
+using PianoMentor.DAL.Models.Identity;
 using PianoMentor.DAL.Models.PianoMentor.Quizzes;
 using PianoMentor.DAL.Models.PianoMentor.Texts;
 
@@ -80,7 +80,7 @@ namespace PianoMentor.DAL
 
 				e.HasData(
 				[
-					new { Id = 1, Name = "DevStorage", BasePath = "C:\\PianoMentor\\DevStorage", AllowWrite = true }
+					new { Id = 1, Name = "DevStorage", BasePath = @"C:\PianoMentor\DevStorage", AllowWrite = true }
 				]);
 			});
 
@@ -134,7 +134,7 @@ namespace PianoMentor.DAL
 
 				e.Property(p => p.Name).IsRequired().HasMaxLength(30);
 
-				foreach (var v in Enum.GetValues<CourseItemTypesEnumeration>())
+				foreach (var v in Enum.GetValues<CourseItemTypesEnum>())
 				{
 					e.HasData(new { CourseItemTypeId = (int)v, Name = v.ToString() });
 				}
@@ -171,7 +171,7 @@ namespace PianoMentor.DAL
 
 				e.Property(p => p.Name).IsRequired().HasMaxLength(30);
 
-				foreach (var v in Enum.GetValues<CourseItemProgressTypesEnumaration>())
+				foreach (var v in Enum.GetValues<CourseItemProgressTypesEnum>())
 				{
 					e.HasData(new { Id = (int)v, Name = v.ToString() });
 				}
@@ -268,13 +268,15 @@ namespace PianoMentor.DAL
 		{
 			foreach (var entry in ChangeTracker.Entries<CourseUserProgress>())
 			{
-				if (entry.State == EntityState.Added || entry.State == EntityState.Modified)
+				if (entry.State is not (EntityState.Added or EntityState.Modified))
 				{
-					var courseProgress = entry.Entity;
-					if (courseProgress.ProgressInPercent > 100)
-					{
-						courseProgress.ProgressInPercent = 100;
-					}
+					continue;
+				}
+				
+				var courseProgress = entry.Entity;
+				if (courseProgress.ProgressInPercent > 100)
+				{
+					courseProgress.ProgressInPercent = 100;
 				}
 			}
 		}

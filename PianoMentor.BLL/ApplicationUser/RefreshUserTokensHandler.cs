@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using PianoMentor.BLL.TokenService;
 using PianoMentor.Contract.ApplicationUser;
-using PianoMentor.DAL.Domain.Identity;
 using System.Security.Claims;
+using PianoMentor.DAL.Models.Identity;
 
 namespace PianoMentor.BLL.ApplicationUser
 {
@@ -11,12 +11,9 @@ namespace PianoMentor.BLL.ApplicationUser
 		UserManager<PianoMentorUser> userManager,
 		ITokenService tokenService) : IRequestHandler<RefreshUserTokensRequest, RefreshUserTokensResponse>
 	{
-		private readonly UserManager<PianoMentorUser> _userManager = userManager;
-		private readonly ITokenService _tokenService = tokenService;
-
 		public async Task<RefreshUserTokensResponse> Handle(RefreshUserTokensRequest request, CancellationToken cancellationToken)
 		{
-			var principalFromExpToken = _tokenService.GetPrincipalFromExpiredToken(request.Tokens.AccessToken);
+			var principalFromExpToken = tokenService.GetPrincipalFromExpiredToken(request.Tokens.AccessToken);
 
 			if (principalFromExpToken == null)
 			{
@@ -29,7 +26,7 @@ namespace PianoMentor.BLL.ApplicationUser
 				return new RefreshUserTokensResponse(["Cannot find user id in access token"]);
 			}
 
-			var user = await _userManager.FindByIdAsync(userId);
+			var user = await userManager.FindByIdAsync(userId);
 			if (user == null)
 			{
 				return new RefreshUserTokensResponse(["Connot find user, who owns this access token"]);
@@ -43,12 +40,12 @@ namespace PianoMentor.BLL.ApplicationUser
 				return new RefreshUserTokensResponse([$"User's \"{user.UserName}\" refresh token does not match with sended refresh token or refresh token has been already expired"]);
 			}
 
-			var userRoles = await _userManager.GetRolesAsync(user);
-			var (newAccessToken, newAccessTokenExpiryDateTime) = _tokenService.CreateAccessToken(user, userRoles);
-			string newRefreshToken = _tokenService.CreateRefreshToken();
+			var userRoles = await userManager.GetRolesAsync(user);
+			var (newAccessToken, newAccessTokenExpiryDateTime) = tokenService.CreateAccessToken(user, userRoles);
+			string newRefreshToken = tokenService.CreateRefreshToken();
 			user.RefreshToken = newRefreshToken;
 
-			var updatingResult = await _userManager.UpdateAsync(user);
+			var updatingResult = await userManager.UpdateAsync(user);
 
 			if (!updatingResult.Succeeded)
 			{

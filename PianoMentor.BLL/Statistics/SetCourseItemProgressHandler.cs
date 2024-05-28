@@ -9,13 +9,11 @@ namespace PianoMentor.BLL.Statistics
 {
     internal class SetCourseItemProgressHandler(PianoMentorDbContext dbContext) : IRequestHandler<SetCourseItemProgressRequest, DefaultResponse>
     {
-        private readonly PianoMentorDbContext _dbContext = dbContext;
-
         public Task<DefaultResponse> Handle(SetCourseItemProgressRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var itemProgressDb = _dbContext.CourseItemUserProgresses
+                var itemProgressDb = dbContext.CourseItemUserProgresses
                     .FirstOrDefault(ciup =>
                         ciup.UserId == request.UserId
                         && ciup.CourseItemId == request.CourseItemId);
@@ -27,11 +25,11 @@ namespace PianoMentor.BLL.Statistics
                         CourseItemId = request.CourseItemId,
                         CreatedAt = DateTime.UtcNow
                     };
-                    _dbContext.CourseItemUserProgresses.Add(itemProgressDb);
+                    dbContext.CourseItemUserProgresses.Add(itemProgressDb);
                 }
 
                 itemProgressDb.CourseItemProgressTypeId =
-                    Enum.TryParse(typeof(CourseItemProgressTypesEnumaration), request.CourseItemProgressType, out var courseItemProgressType)
+                    Enum.TryParse(typeof(CourseItemProgressTypesEnum), request.CourseItemProgressType, out var courseItemProgressType)
                         ? (int)courseItemProgressType
                         : 0;
 
@@ -39,21 +37,21 @@ namespace PianoMentor.BLL.Statistics
                 {
                     return Task.FromResult(new DefaultResponse([$"Course item progress type \'{request.CourseItemProgressType}\' is not valid"]));
                 }
-                _dbContext.SaveChanges();
+                dbContext.SaveChanges();
 
-                var countAllCourseItems = _dbContext.CourseItems.Count(ci => ci.CourseId == request.CourseId);
+                var countAllCourseItems = dbContext.CourseItems.Count(ci => ci.CourseId == request.CourseId);
                 if (countAllCourseItems == 0)
                 {
                     return Task.FromResult(new DefaultResponse([$"Course \'{request.CourseId}\' has no items"]));
                 }
-                var countCompletedCourseItems = _dbContext.CourseItemUserProgresses
+                var countCompletedCourseItems = dbContext.CourseItemUserProgresses
                     .Count(ciup =>
                         ciup.UserId == request.UserId
                         && ciup.CourseItem.CourseId == request.CourseId
-                        && ciup.CourseItemProgressTypeId == (int)CourseItemProgressTypesEnumaration.Completed);
+                        && ciup.CourseItemProgressTypeId == (int)CourseItemProgressTypesEnum.Completed);
                 int courseProgress = (int)Math.Ceiling((double)countCompletedCourseItems * 100 / countAllCourseItems);
 
-                var courseProgressDb = _dbContext.CourseUserProgresses
+                var courseProgressDb = dbContext.CourseUserProgresses
                     .FirstOrDefault(cup =>
                         cup.UserId == request.UserId
                         && cup.CourseId == request.CourseId);
@@ -64,11 +62,11 @@ namespace PianoMentor.BLL.Statistics
                         CourseId = request.CourseId,
                         UserId = request.UserId
                     };
-                    _dbContext.CourseUserProgresses.Add(courseProgressDb);
+                    dbContext.CourseUserProgresses.Add(courseProgressDb);
                 }
 
                 courseProgressDb.ProgressInPercent = courseProgress;
-                _dbContext.SaveChanges();
+                dbContext.SaveChanges();
 
                 return Task.FromResult(new DefaultResponse(null));
             }

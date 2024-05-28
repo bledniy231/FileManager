@@ -18,13 +18,10 @@ namespace PianoMentor.Controllers
 		ControllersHelper controllersHelper,
 		IMediator mediator) : ControllerBase
 	{
-		private readonly ControllersHelper _controllersHelper = controllersHelper;
-		private readonly IMediator _mediator = mediator;
-
 		[HttpGet]	
 		public async Task<IActionResult> GetCourses([FromQuery] long userId)
 		{
-			return await _controllersHelper.SendRequet<GetCoursesRequest, GetCoursesResponse>(new GetCoursesRequest { UserId = userId });
+			return await controllersHelper.SendRequest<GetCoursesRequest, GetCoursesResponse>(new GetCoursesRequest { UserId = userId });
 		}
 
 		[HttpGet]
@@ -35,84 +32,26 @@ namespace PianoMentor.Controllers
 				return BadRequest("Course id cannot be less or equals zero");
 			}
 
-			return await _controllersHelper.SendRequet<GetCourseItemsRequest, GetCourseItemsResponse>(new GetCourseItemsRequest { UserId = userId, CourseId = courseId });
+			return await controllersHelper.SendRequest<GetCourseItemsRequest, GetCourseItemsResponse>(new GetCourseItemsRequest { UserId = userId, CourseId = courseId });
 		}
 
 		[HttpPut]
 		[Authorize]
 		public async Task<IActionResult> SetCourseItemProgress([FromBody] SetCourseItemProgressRequest request)
 		{
-			return await _controllersHelper.SendRequet<SetCourseItemProgressRequest, DefaultResponse>(request);
+			return await controllersHelper.SendRequest<SetCourseItemProgressRequest, DefaultResponse>(request);
 		}
 
 		[HttpPost]
 		[Authorize]
 		public async Task<IActionResult> SetCourseViaAdmin([FromBody] SetNewCoursesViaAdminRequest request)
 		{
-			if (!_controllersHelper.IsUserAdmin(User, out long _))
+			if (!controllersHelper.IsUserAdmin(User, out long _))
 			{
 				return Unauthorized("You aren't administrator");
 			}
 
-			return await _controllersHelper.SendRequet<SetNewCoursesViaAdminRequest, DefaultResponse>(request);
-		}
-
-		[HttpPost]
-		[Authorize]
-		[Consumes("multipart/form-data")]
-		[DisableRequestSizeLimit]
-		[DisableFormValueModelBinding]
-		public async Task<IActionResult> UploadLecturePdf([FromQuery] int courseItemId)
-		{
-			if (!_controllersHelper.IsUserAdmin(User, out long userId))
-			{
-				return Unauthorized("You aren't administrator");
-			}
-
-			var isCourseItemExistResponse = await _mediator.Send(new CheckIfCourseItemExistsRequest
-			{
-				CourseItemId = courseItemId,
-				CourseItemTypeId = (int)CourseItemTypesEnumeration.Lecture
-			});
-
-			if (isCourseItemExistResponse.Errors != null && isCourseItemExistResponse.Errors.Length > 0)
-			{
-				return NotFound($"Course item not found, errors: {string.Join("; ", isCourseItemExistResponse.Errors)}");
-			}
-
-			var uploadRequest = new UploadFilesRequest(userId, courseItemId, Request.ContentType, Request.Body);
-			return await _controllersHelper.SendRequet<UploadFilesRequest, DefaultResponse>(uploadRequest);
-		}
-
-		[HttpGet]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> DownloadCourseItemFile([FromQuery] int courseItemId)
-		{
-			var isCourseItemExistResponse = await _mediator.Send(new CheckIfCourseItemExistsRequest
-			{
-				CourseItemId = courseItemId,
-				CourseItemTypeId = (int)CourseItemTypesEnumeration.Lecture
-			});
-
-			if (isCourseItemExistResponse.Errors != null && isCourseItemExistResponse.Errors.Length > 0)
-			{
-				return NotFound($"Course item not found, errors: {string.Join("; ", isCourseItemExistResponse.Errors)}");
-			}
-
-			var downloadRequest = new DownloadCourseItemFileRequest(courseItemId);
-			var response = await _mediator.Send(downloadRequest);
-
-			if (response.Errors != null && response.Errors.Length > 0)
-			{
-				return BadRequest(response.Errors);
-			}
-
-			return new FileStreamResult(response.FileStream, response.ContentType)
-			{
-				FileDownloadName = response.FileDownloadName
-			};
+			return await controllersHelper.SendRequest<SetNewCoursesViaAdminRequest, DefaultResponse>(request);
 		}
 
 		[Authorize]
@@ -131,60 +70,26 @@ namespace PianoMentor.Controllers
 				UserId = userId
 			};
 
-			return await _controllersHelper.SendRequet<GetQuizRequest, GetQuizResponse>(request);
+			return await controllersHelper.SendRequest<GetQuizRequest, GetQuizResponse>(request);
 		}
 
 		[Authorize]
 		[HttpPost]
 		public async Task<IActionResult> SetQuizUserAnswers([FromBody] SetQuizUserAnswersRequest request)
 		{
-			return await _controllersHelper.SendRequet<SetQuizUserAnswersRequest, SetQuizUserAnswersResponse>(request);
-		}
-
-		[Authorize]
-		[HttpGet]
-		public async Task<IActionResult> DownloadQuizQuestionFile([FromQuery] long dataSetId)
-		{
-			var request = new DownloadFilesRequest(dataSetId, 0, false);
-			var response = await _mediator.Send(request);
-
-			if (!response.Errors.IsNullOrEmpty())
-			{
-				return BadRequest(response.Errors);
-			}
-
-			return new FileStreamResult(response.FileStream, response.ContentType)
-			{
-				FileDownloadName = response.FileDownloadName
-			};
+			return await controllersHelper.SendRequest<SetQuizUserAnswersRequest, SetQuizUserAnswersResponse>(request);
 		}
 
 		[Authorize]
 		[HttpPost]
 		public async Task<IActionResult> SetNewQuiz([FromBody] SetNewQuizRequest request)
 		{
-			if (!_controllersHelper.IsUserAdmin(User, out long _))
+			if (!controllersHelper.IsUserAdmin(User, out long _))
 			{
 				return Unauthorized("You aren't administrator");
 			}
 
-			return await _controllersHelper.SendRequet<SetNewQuizRequest, DefaultResponse>(request);
-		}
-
-		[Authorize]
-		[HttpPost]
-		[Consumes("multipart/form-data")]
-		[DisableRequestSizeLimit]
-		[DisableFormValueModelBinding]
-		public async Task<IActionResult> UploadQuestionImage([FromQuery] long userId, int questionId)
-		{
-			if (!_controllersHelper.IsUserAdmin(User, out long _))
-			{
-				return Unauthorized("You aren't administrator");
-			}
-
-			var request = new UploadQuestionImageRequest(userId, questionId, Request.ContentType, Request.Body);
-			return await _controllersHelper.SendRequet<UploadQuestionImageRequest, DefaultResponse>(request);
+			return await controllersHelper.SendRequest<SetNewQuizRequest, DefaultResponse>(request);
 		}
 	}
 }

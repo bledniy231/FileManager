@@ -8,18 +8,16 @@ namespace PianoMentor.BLL.Couses
 {
 	internal class GetCoursesHandler(PianoMentorDbContext dbContext) : IRequestHandler<GetCoursesRequest, GetCoursesResponse>
 	{
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-
 		public Task<GetCoursesResponse> Handle(GetCoursesRequest request, CancellationToken cancellationToken)
 		{
 			try
 			{
-				var coursesUserProgresses = _dbContext.CourseUserProgresses
+				var coursesUserProgresses = dbContext.CourseUserProgresses
 					.AsNoTracking()
 					.Where(cup => cup.UserId == request.UserId)
 					.ToList();
 
-				var courses = _dbContext.Courses
+				var courses = dbContext.Courses
 					.AsNoTracking()
 					.AsEnumerable()
 					.Select(c => new CourseModel

@@ -1,7 +1,6 @@
-﻿using PianoMentor.Contract.Files;
-using MediatR;
+﻿using MediatR;
 
-namespace PianoMentor.Contract.Courses
+namespace PianoMentor.Contract.Files
 {
 	public class DownloadCourseItemFileRequest(int courseItemId) : IRequest<DownloadFilesResponse>
 	{

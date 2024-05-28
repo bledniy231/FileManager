@@ -11,28 +11,26 @@ namespace PianoMentor.BLL.Quizzes
 {
 	internal class SetQuizUserAnswersHandler(PianoMentorDbContext dbContext) : IRequestHandler<SetQuizUserAnswersRequest, SetQuizUserAnswersResponse>
 	{
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-
 		public async Task<SetQuizUserAnswersResponse> Handle(SetQuizUserAnswersRequest request, CancellationToken cancellationToken)
 		{
-			bool didUserAlreadyCompletedQuiz = await _dbContext.QuizQuestionUserAnswerLogs
+			bool didUserAlreadyCompletedQuiz = await dbContext.QuizQuestionUserAnswerLogs
 				.CountAsync(al =>
 					al.UserId == request.UserId
 					&& al.IsCorrect
 					&& !al.Question.IsDeleted
 					&& al.Question.CourseItemId == request.CourseItemId
-					&& al.AnsweredAt == _dbContext.QuizQuestionUserAnswerLogs
+					&& al.AnsweredAt == dbContext.QuizQuestionUserAnswerLogs
 						.Where(al2 => al2.UserId == request.UserId)
 						.Max(al2 => al2.AnsweredAt), cancellationToken)
 				==
-				_dbContext.QuizQuestions.Count(q => q.CourseItemId == request.CourseItemId && !q.IsDeleted);
+				dbContext.QuizQuestions.Count(q => q.CourseItemId == request.CourseItemId && !q.IsDeleted);
 
 			if (didUserAlreadyCompletedQuiz)
 			{
-				return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnumaration.Completed.ToString(), ["User already completed the quiz"]);
+				return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnum.Completed.ToString(), ["User already completed the quiz"]);
 			}
 
-			var questionsFromDb = _dbContext.QuizQuestions
+			var questionsFromDb = dbContext.QuizQuestions
 				.Include(q => q.QuizQuestionsAnswers)
 				.Where(q =>
 					q.CourseItemId == request.CourseItemId
@@ -65,12 +63,12 @@ namespace PianoMentor.BLL.Quizzes
 			{
 				try
 				{
-					await SaveUserAnswers(request, questionsFromDb, (int)CourseItemProgressTypesEnumaration.InProgress, cancellationToken);
-					return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnumaration.InProgress.ToString(), null);
+					await SaveUserAnswers(request, questionsFromDb, (int)CourseItemProgressTypesEnum.InProgress, cancellationToken);
+					return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnum.InProgress.ToString(), null);
 				}
 				catch (Exception ex)
 				{
-					return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnumaration.NotStarted.ToString(), [ex.Message]);
+					return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnum.NotStarted.ToString(), [ex.Message]);
 				}
 			}
 
@@ -105,7 +103,7 @@ namespace PianoMentor.BLL.Quizzes
 				}
 				catch (Exception ex)
 				{
-					return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnumaration.NotStarted.ToString(), [ex.Message]);
+					return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnum.NotStarted.ToString(), [ex.Message]);
 				}
 
 				int countOfUserCorrectQuestionAnswers = 0;
@@ -132,25 +130,25 @@ namespace PianoMentor.BLL.Quizzes
 			if (errors.Count > 0)
 			{
 				errors.Add("No answers was saved!");
-				return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnumaration.NotStarted.ToString(), errors.ToArray());
+				return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnum.NotStarted.ToString(), errors.ToArray());
 			}
 
 			try
 			{
 				if (countOfUserCorrectQuestions == questionsFromDb.Count)
 				{
-					await SaveUserAnswers(request, questionsFromDb, (int)CourseItemProgressTypesEnumaration.Completed, cancellationToken);
-					return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnumaration.Completed.ToString(), null);
+					await SaveUserAnswers(request, questionsFromDb, (int)CourseItemProgressTypesEnum.Completed, cancellationToken);
+					return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnum.Completed.ToString(), null);
 				}
 				else
 				{
-					await SaveUserAnswers(request, questionsFromDb, (int)CourseItemProgressTypesEnumaration.Failed, cancellationToken);
-					return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnumaration.Failed.ToString(), null);
+					await SaveUserAnswers(request, questionsFromDb, (int)CourseItemProgressTypesEnum.Failed, cancellationToken);
+					return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnum.Failed.ToString(), null);
 				}
 			}
 			catch (Exception ex)
 			{
-				return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnumaration.NotStarted.ToString(), [ex.Message]);
+				return new SetQuizUserAnswersResponse(CourseItemProgressTypesEnum.NotStarted.ToString(), [ex.Message]);
 			}
 		}
 
@@ -182,7 +180,7 @@ namespace PianoMentor.BLL.Quizzes
 				userAnswersLogs.AddRange(userAnswersByQuestion);
 			}
 
-			_dbContext.QuizQuestionUserAnswerLogs.AddRange(userAnswersLogs);
+			dbContext.QuizQuestionUserAnswerLogs.AddRange(userAnswersLogs);
 			var courseItemUserProgress = new CourseItemUserProgress
 			{
 				UserId = request.UserId,
@@ -190,8 +188,8 @@ namespace PianoMentor.BLL.Quizzes
 				CourseItemProgressTypeId = courseItemProgressTypeId,
 				CreatedAt = answeredAt
 			};
-			_dbContext.CourseItemUserProgresses.Add(courseItemUserProgress);
-			await _dbContext.SaveChangesAsync(cancellationToken);
+			dbContext.CourseItemUserProgresses.Add(courseItemUserProgress);
+			await dbContext.SaveChangesAsync(cancellationToken);
 		}
 	}
 }

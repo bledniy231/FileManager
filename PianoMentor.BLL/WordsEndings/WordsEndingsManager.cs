@@ -4,17 +4,17 @@ namespace PianoMentor.BLL.WordsEndings
 {
 	public static class WordsEndingsManager
 	{
-		private static readonly Dictionary<CourseItemTypesEnumeration, string[]> _wordEndings  =
+		private static readonly Dictionary<CourseItemTypesEnum, string[]> _wordEndings  =
 			new()
 			{
-				{ CourseItemTypesEnumeration.Lecture, ["Лекция", "Лекции", "Лекций"] },
-				{ CourseItemTypesEnumeration.Exercise, ["Упражнение", "Упражнения", "Упражнений"] },
-				{ CourseItemTypesEnumeration.Quiz, ["Тест", "Теста", "Тестов"] }
+				{ CourseItemTypesEnum.Lecture, ["Лекция", "Лекции", "Лекций"] },
+				{ CourseItemTypesEnum.Exercise, ["Упражнение", "Упражнения", "Упражнений"] },
+				{ CourseItemTypesEnum.Quiz, ["Тест", "Теста", "Тестов"] }
 			};
 
 		private static readonly string[] _wordEndingsCourse = ["Курс", "Курса", "Курсов"];
 
-		public static string GetSimpleEnding(CourseItemTypesEnumeration courseItemType, int count)
+		public static string GetSimpleEnding(CourseItemTypesEnum courseItemType, int count)
 		{
 			count %= 100;
 			if (count >= 5 && count <= 20)
@@ -40,7 +40,7 @@ namespace PianoMentor.BLL.WordsEndings
 			}
 			else if (type == "Quiz")
 			{
-				wordEndingsCollection = _wordEndings[CourseItemTypesEnumeration.Quiz];
+				wordEndingsCollection = _wordEndings[CourseItemTypesEnum.Quiz];
 			}
 			else
 			{

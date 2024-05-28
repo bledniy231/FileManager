@@ -9,6 +9,7 @@ using PianoMentor.Contract.Quizzes;
 using PianoMentor.DAL;
 using PianoMentor.DAL.Domain.DataSet;
 using System.Net;
+using PianoMentor.Contract.Files;
 
 namespace PianoMentor.BLL.Quizzes
 {
@@ -18,9 +19,6 @@ namespace PianoMentor.BLL.Quizzes
 		IMultipartRequestHelper multipartRequestHelper) 
 		: IRequestHandler<UploadQuestionImageRequest, DefaultResponse>
 	{
-		private readonly IMultipartRequestHelper _multipartRequestHelper = multipartRequestHelper;
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-		private readonly FormOptions _formOptions = formOptions;
 		private readonly string[] _fileExtensions = [".webp", ".png", ".jpg", ".jpeg", ".jfif"];
 		private readonly static byte[] PNGSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
 		private readonly static byte[] JPEGSignature = [0xFF, 0xD8];
@@ -29,24 +27,24 @@ namespace PianoMentor.BLL.Quizzes
 
 		public async Task<DefaultResponse> Handle(UploadQuestionImageRequest request, CancellationToken cancellationToken)
 		{
-			if (!_multipartRequestHelper.IsMultipartContentType(request.ContentType))
+			if (!multipartRequestHelper.IsMultipartContentType(request.ContentType))
 			{
 				return new DefaultResponse(["Unsupported media type"]);
 			}
 
-			var managedUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
+			var managedUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
 			if (managedUser == null)
 			{
 				return new DefaultResponse(["Incorrect userId"]);
 			}
 
-			var storage = _dbContext.Storages.FirstOrDefault(s => s.AllowWrite);
+			var storage = dbContext.Storages.FirstOrDefault(s => s.AllowWrite);
 			if (storage == null)
 			{
 				return new DefaultResponse(["No storage with write access"]);
 			}
 
-			var questionDb = _dbContext.QuizQuestions.FirstOrDefault(q => q.QuestionId == request.QuestionId && !q.IsDeleted);
+			var questionDb = dbContext.QuizQuestions.FirstOrDefault(q => q.QuestionId == request.QuestionId && !q.IsDeleted);
 			if (questionDb == null)
 			{
 				return new DefaultResponse([$"No question with {request.QuestionId} found in DB"]);
@@ -59,13 +57,13 @@ namespace PianoMentor.BLL.Quizzes
 				Storage = storage,
 				OwnerId = request.UserId
 			};
-			_dbContext.SaveChanges();
+			dbContext.SaveChanges();
 
 			var binaries = new List<DAL.Domain.DataSet.BinaryData>();
 
-			var boundary = _multipartRequestHelper.GetBoundary(
+			var boundary = multipartRequestHelper.GetBoundary(
 				MediaTypeHeaderValue.Parse(request.ContentType),
-				_formOptions.MultipartBoundaryLengthLimit);
+				formOptions.MultipartBoundaryLengthLimit);
 
 			var reader = new MultipartReader(boundary, request.Body);
 			var section = await reader.ReadNextSectionAsync(cancellationToken);
@@ -83,7 +81,7 @@ namespace PianoMentor.BLL.Quizzes
 
 				if (ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition))
 				{
-					if (!_multipartRequestHelper.HasFileContentDisposition(contentDisposition))
+					if (!multipartRequestHelper.HasFileContentDisposition(contentDisposition))
 					{
 						return TerminateUploading(questionDb.AttachedDataSet, [$"File index: {fileIndex}, " +
 							$"Error: Wrong file content disposition, it should be like that: " +
@@ -164,7 +162,7 @@ namespace PianoMentor.BLL.Quizzes
 			questionDb.AttachedDataSet.IsDraft = false;
 
 			managedUser.DataSets.Add(questionDb.AttachedDataSet);
-			_dbContext.SaveChanges();
+			dbContext.SaveChanges();
 
 			return new DefaultResponse(null);
 		}
@@ -183,8 +181,8 @@ namespace PianoMentor.BLL.Quizzes
 		private DefaultResponse TerminateUploading(DataSet dataSet, string[] errors)
 		{
 			Directory.Delete(dataSet.GetDataSetDirectory(), true);
-			_dbContext.DataSets.Remove(dataSet);
-			_dbContext.SaveChanges();
+			dbContext.DataSets.Remove(dataSet);
+			dbContext.SaveChanges();
 			return new DefaultResponse(errors);
 		}
 

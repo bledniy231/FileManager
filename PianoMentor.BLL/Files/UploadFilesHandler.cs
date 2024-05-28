@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using System.Net;
+using PianoMentor.DAL.Models.Identity;
 
 namespace PianoMentor.BLL.Files
 {
@@ -18,25 +19,22 @@ namespace PianoMentor.BLL.Files
 		IMultipartRequestHelper multipartRequestHelper) 
 		: IRequestHandler<UploadFilesRequest, DefaultResponse>
 	{
-		private readonly IMultipartRequestHelper _multipartRequestHelper = multipartRequestHelper;
-		private readonly PianoMentorDbContext _dbContext = dbContext;
-		private readonly FormOptions _formOptions = formOptions;
 		private readonly List<string> _failedLoadFilesWithErrors = [];
 
 		public async Task<DefaultResponse> Handle(UploadFilesRequest request, CancellationToken cancellationToken)
 		{
-			if (!_multipartRequestHelper.IsMultipartContentType(request.ContentType))
+			if (!multipartRequestHelper.IsMultipartContentType(request.ContentType))
 			{
 				return new DefaultResponse(["Unsupported media type"]);
 			}
 
-			var managedUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
+			var managedUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
 			if (managedUser == null)
 			{
 				return new DefaultResponse(["Incorrect userId"]);
 			}
 
-			var storage = _dbContext.Storages.FirstOrDefault(s => s.AllowWrite);
+			var storage = dbContext.Storages.FirstOrDefault(s => s.AllowWrite);
 			if (storage == null)
 			{
 				return new DefaultResponse(["No storage with write access"]);
@@ -48,7 +46,7 @@ namespace PianoMentor.BLL.Files
 			// Далее видно ветвление, позволяющее разграничить функциональность для того или иного случая
 			if (request.CourseItemId.HasValue)
 			{
-				var courseItem = _dbContext.CourseItems.FirstOrDefault(ci => ci.CourseItemId == request.CourseItemId && !ci.IsDeleted);
+				var courseItem = dbContext.CourseItems.FirstOrDefault(ci => ci.CourseItemId == request.CourseItemId && !ci.IsDeleted);
 				if (courseItem == null)
 				{
 					return new DefaultResponse(["Incorrect course item Id or course item was deleted"]);
@@ -61,7 +59,7 @@ namespace PianoMentor.BLL.Files
 					Owner = managedUser,
 					Storage = storage
 				};
-				_dbContext.SaveChanges();
+				dbContext.SaveChanges();
 
 				return await UploadFilesInternal(request, courseItem.AttachedDataSet, managedUser, true, cancellationToken);
 			}
@@ -74,8 +72,8 @@ namespace PianoMentor.BLL.Files
 					Owner = managedUser,
 					Storage = storage
 				};
-				_dbContext.DataSets.Add(dataSet);
-				_dbContext.SaveChanges();
+				dbContext.DataSets.Add(dataSet);
+				dbContext.SaveChanges();
 
 				return await UploadFilesInternal(request, dataSet, managedUser, false, cancellationToken);
 			}
@@ -84,15 +82,15 @@ namespace PianoMentor.BLL.Files
 		private async Task<DefaultResponse> UploadFilesInternal(
 			UploadFilesRequest request,
 			DAL.Domain.DataSet.DataSet dataSet,
-			DAL.Domain.Identity.PianoMentorUser managedUser,
+			PianoMentorUser managedUser,
 			bool isAttachedToCourseItem,
 			CancellationToken cancellationToken)
 		{
 			var binaries = new List<DAL.Domain.DataSet.BinaryData>();
 
-			var boundary = _multipartRequestHelper.GetBoundary(
+			var boundary = multipartRequestHelper.GetBoundary(
 				MediaTypeHeaderValue.Parse(request.ContentType),
-				_formOptions.MultipartBoundaryLengthLimit);
+				formOptions.MultipartBoundaryLengthLimit);
 
 			var reader = new MultipartReader(boundary, request.Body);
 			var section = await reader.ReadNextSectionAsync(cancellationToken);
@@ -111,7 +109,7 @@ namespace PianoMentor.BLL.Files
 
 				if (ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition))
 				{
-					if (!_multipartRequestHelper.HasFileContentDisposition(contentDisposition))
+					if (!multipartRequestHelper.HasFileContentDisposition(contentDisposition))
 					{
 						_failedLoadFilesWithErrors.Add($"File index: {fileIndex}, " +
 							$"Error: Wrong file content disposition, it should be like that: " +
@@ -200,8 +198,8 @@ namespace PianoMentor.BLL.Files
 			if (fileIndex == _failedLoadFilesWithErrors.Count || (isAttachedToCourseItem && _failedLoadFilesWithErrors.Count > 0))
 			{
 				Directory.Delete(dataSet.GetDataSetDirectory(), true);
-				_dbContext.DataSets.Remove(dataSet);
-				_dbContext.SaveChanges();
+				dbContext.DataSets.Remove(dataSet);
+				dbContext.SaveChanges();
 				_failedLoadFilesWithErrors.Add("All files failed to load");
 				return new DefaultResponse([.. _failedLoadFilesWithErrors]);
 			}
@@ -210,7 +208,7 @@ namespace PianoMentor.BLL.Files
 			dataSet.IsDraft = false;
 
 			managedUser.DataSets.Add(dataSet);
-			_dbContext.SaveChanges();
+			dbContext.SaveChanges();
 
 			if (_failedLoadFilesWithErrors.Count != 0)
 			{
