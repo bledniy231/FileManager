@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PianoMentor.Certificates;
 using PianoMentor.Contract.ApplicationUser;
-using PianoMentor.Contract.Files;
 using PianoMentor.Contract.Statistics;
 
 namespace PianoMentor.Controllers

@@ -23,6 +23,21 @@ namespace PianoMentor.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ExerciseTaskInterval", b =>
+                {
+                    b.Property<int>("ExerciseTaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IntervalsInTaskIntervalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ExerciseTaskId", "IntervalsInTaskIntervalId");
+
+                    b.HasIndex("IntervalsInTaskIntervalId");
+
+                    b.ToTable("IntervalsInTasks", "PianoMentor");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<long>", b =>
                 {
                     b.Property<long>("Id")
@@ -276,85 +291,6 @@ namespace PianoMentor.DAL.Migrations
                         });
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.Identity.PianoMentorUser", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RefreshTokenExpireTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", "PianoMentor");
-                });
-
             modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.Course", b =>
                 {
                     b.Property<int>("CourseId")
@@ -572,6 +508,246 @@ namespace PianoMentor.DAL.Migrations
                     b.ToTable("CourseUsersProgresses", "PianoMentor");
                 });
 
+            modelBuilder.Entity("PianoMentor.DAL.Models.Identity.PianoMentorUser", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpireTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", "PianoMentor");
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Exercises.ExerciseTask", b =>
+                {
+                    b.Property<int>("ExerciseTaskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExerciseTaskId"));
+
+                    b.Property<int>("CourseItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExerciseTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ExerciseTaskId");
+
+                    b.HasIndex("CourseItemId");
+
+                    b.HasIndex("ExerciseTypeId");
+
+                    b.ToTable("ExerciseTasks", "PianoMentor");
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Exercises.ExerciseType", b =>
+                {
+                    b.Property<int>("ExerciseTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExerciseTypeId"));
+
+                    b.Property<string>("ExerciseTypeName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("ExerciseTypeId");
+
+                    b.ToTable("ExerciseTypes", "PianoMentor");
+
+                    b.HasData(
+                        new
+                        {
+                            ExerciseTypeId = 1,
+                            ExerciseTypeName = "ComparisonAsc"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 2,
+                            ExerciseTypeName = "ComparisonDesc"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 3,
+                            ExerciseTypeName = "DeterminationAsc"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 4,
+                            ExerciseTypeName = "DeterminationDesc"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 5,
+                            ExerciseTypeName = "ComparisonHarmonious"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 6,
+                            ExerciseTypeName = "DeterminationHarmonious"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 7,
+                            ExerciseTypeName = "DeterminationMultiple"
+                        });
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Exercises.Interval", b =>
+                {
+                    b.Property<int>("IntervalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IntervalId"));
+
+                    b.Property<string>("IntervalName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("IntervalId");
+
+                    b.ToTable("Intervals", "PianoMentor");
+
+                    b.HasData(
+                        new
+                        {
+                            IntervalId = 1,
+                            IntervalName = "MinorSecond"
+                        },
+                        new
+                        {
+                            IntervalId = 2,
+                            IntervalName = "MajorSecond"
+                        },
+                        new
+                        {
+                            IntervalId = 3,
+                            IntervalName = "MinorThird"
+                        },
+                        new
+                        {
+                            IntervalId = 4,
+                            IntervalName = "MajorThird"
+                        },
+                        new
+                        {
+                            IntervalId = 5,
+                            IntervalName = "PerfectFourth"
+                        },
+                        new
+                        {
+                            IntervalId = 6,
+                            IntervalName = "Tritone"
+                        },
+                        new
+                        {
+                            IntervalId = 7,
+                            IntervalName = "PerfectFifth"
+                        },
+                        new
+                        {
+                            IntervalId = 8,
+                            IntervalName = "MinorSixth"
+                        },
+                        new
+                        {
+                            IntervalId = 9,
+                            IntervalName = "MajorSixth"
+                        },
+                        new
+                        {
+                            IntervalId = 10,
+                            IntervalName = "MinorSeventh"
+                        },
+                        new
+                        {
+                            IntervalId = 11,
+                            IntervalName = "MajorSeventh"
+                        },
+                        new
+                        {
+                            IntervalId = 12,
+                            IntervalName = "Octave"
+                        });
+                });
+
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestion", b =>
                 {
                     b.Property<int>("QuestionId")
@@ -768,6 +944,21 @@ namespace PianoMentor.DAL.Migrations
                     b.ToTable("ViewPagerTextNumberRanges", "PianoMentor");
                 });
 
+            modelBuilder.Entity("ExerciseTaskInterval", b =>
+                {
+                    b.HasOne("PianoMentor.DAL.Models.PianoMentor.Exercises.ExerciseTask", null)
+                        .WithMany()
+                        .HasForeignKey("ExerciseTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PianoMentor.DAL.Models.PianoMentor.Exercises.Interval", null)
+                        .WithMany()
+                        .HasForeignKey("IntervalsInTaskIntervalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<long>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<long>", null)
@@ -779,7 +970,7 @@ namespace PianoMentor.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<long>", b =>
                 {
-                    b.HasOne("PianoMentor.DAL.Domain.Identity.PianoMentorUser", null)
+                    b.HasOne("PianoMentor.DAL.Models.Identity.PianoMentorUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -788,7 +979,7 @@ namespace PianoMentor.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<long>", b =>
                 {
-                    b.HasOne("PianoMentor.DAL.Domain.Identity.PianoMentorUser", null)
+                    b.HasOne("PianoMentor.DAL.Models.Identity.PianoMentorUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -803,7 +994,7 @@ namespace PianoMentor.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PianoMentor.DAL.Domain.Identity.PianoMentorUser", null)
+                    b.HasOne("PianoMentor.DAL.Models.Identity.PianoMentorUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -812,7 +1003,7 @@ namespace PianoMentor.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<long>", b =>
                 {
-                    b.HasOne("PianoMentor.DAL.Domain.Identity.PianoMentorUser", null)
+                    b.HasOne("PianoMentor.DAL.Models.Identity.PianoMentorUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -832,7 +1023,7 @@ namespace PianoMentor.DAL.Migrations
 
             modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.DataSet", b =>
                 {
-                    b.HasOne("PianoMentor.DAL.Domain.Identity.PianoMentorUser", "Owner")
+                    b.HasOne("PianoMentor.DAL.Models.Identity.PianoMentorUser", "Owner")
                         .WithMany("DataSets")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -889,7 +1080,7 @@ namespace PianoMentor.DAL.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PianoMentor.DAL.Domain.Identity.PianoMentorUser", "User")
+                    b.HasOne("PianoMentor.DAL.Models.Identity.PianoMentorUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -910,7 +1101,7 @@ namespace PianoMentor.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PianoMentor.DAL.Domain.Identity.PianoMentorUser", "User")
+                    b.HasOne("PianoMentor.DAL.Models.Identity.PianoMentorUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -919,6 +1110,25 @@ namespace PianoMentor.DAL.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Exercises.ExerciseTask", b =>
+                {
+                    b.HasOne("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItem", "CourseItem")
+                        .WithMany()
+                        .HasForeignKey("CourseItemId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PianoMentor.DAL.Models.PianoMentor.Exercises.ExerciseType", "ExerciseType")
+                        .WithMany()
+                        .HasForeignKey("ExerciseTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CourseItem");
+
+                    b.Navigation("ExerciseType");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestion", b =>
@@ -972,7 +1182,7 @@ namespace PianoMentor.DAL.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PianoMentor.DAL.Domain.Identity.PianoMentorUser", "User")
+                    b.HasOne("PianoMentor.DAL.Models.Identity.PianoMentorUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -999,14 +1209,14 @@ namespace PianoMentor.DAL.Migrations
                     b.Navigation("Binaries");
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.Identity.PianoMentorUser", b =>
-                {
-                    b.Navigation("DataSets");
-                });
-
             modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.Course", b =>
                 {
                     b.Navigation("CourseItems");
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.Identity.PianoMentorUser", b =>
+                {
+                    b.Navigation("DataSets");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestion", b =>

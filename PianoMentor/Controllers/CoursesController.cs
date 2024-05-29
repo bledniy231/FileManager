@@ -1,12 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using PianoMentor.Attributes;
 using PianoMentor.Contract.Courses;
 using PianoMentor.Contract.Default;
-using PianoMentor.Contract.Files;
-using PianoMentor.Contract.Models.PianoMentor.Courses;
+using PianoMentor.Contract.Exercises;
 using PianoMentor.Contract.Quizzes;
 using PianoMentor.Contract.Statistics;
 
@@ -90,6 +87,30 @@ namespace PianoMentor.Controllers
 			}
 
 			return await controllersHelper.SendRequest<SetNewQuizRequest, DefaultResponse>(request);
+		}
+		
+		[Authorize]
+		[HttpGet]
+		public async Task<IActionResult> GetExerciseTask([FromQuery] int courseItemId)
+		{
+			if (courseItemId <= 0)
+			{
+				return BadRequest("Course item id cannot be less or equals zero");
+			}
+
+			return await controllersHelper.SendRequest<GetExerciseTaskRequest, GetExerciseTaskResponse>(new GetExerciseTaskRequest(courseItemId));
+		}
+		
+		[Authorize]
+		[HttpPost]
+		public async Task<IActionResult> SetNewExerciseTask([FromBody] SetExercisesTasksRequest request)
+		{
+			if (!controllersHelper.IsUserAdmin(User, out long _))
+			{
+				return Unauthorized("You aren't administrator");
+			}
+
+			return await controllersHelper.SendRequest<SetExercisesTasksRequest, DefaultResponse>(request);
 		}
 	}
 }

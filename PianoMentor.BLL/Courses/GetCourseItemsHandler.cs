@@ -4,7 +4,7 @@ using PianoMentor.Contract.Courses;
 using PianoMentor.Contract.Models.PianoMentor.Courses;
 using PianoMentor.DAL;
 
-namespace PianoMentor.BLL.Couses
+namespace PianoMentor.BLL.Courses
 {
 	internal class GetCourseItemsHandler(PianoMentorDbContext dbContext) : IRequestHandler<GetCourseItemsRequest, GetCourseItemsResponse>
 	{

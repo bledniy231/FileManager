@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PianoMentor.Contract.Models.PianoMentor.Courses;
+using PianoMentor.Contract.Models.PianoMentor.Exercises;
 using PianoMentor.Contract.Models.PianoMentor.Quizzes;
 using PianoMentor.DAL.Domain.PianoMentor.Courses;
 using PianoMentor.DAL.Models.Identity;
+using PianoMentor.DAL.Models.PianoMentor.Exercises;
 using PianoMentor.DAL.Models.PianoMentor.Quizzes;
 using PianoMentor.DAL.Models.PianoMentor.Texts;
 
@@ -30,6 +32,9 @@ namespace PianoMentor.DAL
 		public DbSet<QuizQuestionAnswer> QuizQuestionAnswers { get; set; }
 		public DbSet<QuizQuestionUserAnswerLog> QuizQuestionUserAnswerLogs { get; set; }
 		public DbSet<QuizQuestionType> QuizQuestionTypes { get; set; }
+		public DbSet<ExerciseTask> ExerciseTasks { get; set; }
+		public DbSet<ExerciseType> ExerciseTypes { get; set; }
+		public DbSet<Interval> Intervals { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
@@ -241,6 +246,48 @@ namespace PianoMentor.DAL
 				e.HasOne(p => p.User).WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.NoAction);
 				e.HasOne(p => p.Question).WithMany().HasForeignKey(e => e.QuestionId).OnDelete(DeleteBehavior.NoAction);
 				e.HasOne(p => p.Answer).WithMany().HasForeignKey(e => e.AnswerId).OnDelete(DeleteBehavior.NoAction);
+			});
+
+			builder.Entity<ExerciseTask>(e =>
+			{
+				e.ToTable("ExerciseTasks");
+
+				e.HasKey(p => p.ExerciseTaskId);
+
+				e.Property(p => p.CourseItemId).IsRequired();
+				e.Property(p => p.ExerciseTypeId).IsRequired();
+
+				e.HasOne(p => p.CourseItem).WithMany().HasForeignKey(p => p.CourseItemId).OnDelete(DeleteBehavior.NoAction);
+				e.HasOne(p => p.ExerciseType).WithMany().HasForeignKey(p => p.ExerciseTypeId).OnDelete(DeleteBehavior.NoAction);
+				e.HasMany(p => p.IntervalsInTask).WithMany().UsingEntity(j => j.ToTable("IntervalsInTasks"));
+			});
+
+			builder.Entity<ExerciseType>(e =>
+			{
+				e.ToTable("ExerciseTypes");
+
+				e.HasKey(p => p.ExerciseTypeId);
+
+				e.Property(p => p.ExerciseTypeName).IsRequired().HasMaxLength(50);
+				
+				foreach (var v in Enum.GetValues<ExerciseTypesEnum>())
+				{
+					e.HasData(new { ExerciseTypeId = (int)v, ExerciseTypeName = v.ToString() });
+				}
+			});
+			
+			builder.Entity<Interval>(e =>
+			{
+				e.ToTable("Intervals");
+
+				e.HasKey(p => p.IntervalId);
+
+				e.Property(p => p.IntervalName).IsRequired().HasMaxLength(50);
+
+				foreach (var v in Enum.GetValues<IntervalsEnum>())
+				{
+					e.HasData(new { IntervalId = (int)v, IntervalName = v.ToString() });
+				}
 			});
 
 			base.OnModelCreating(builder);

@@ -6,7 +6,7 @@ using PianoMentor.DAL.Domain.PianoMentor.Courses;
 using MediatR;
 using System.Diagnostics;
 
-namespace PianoMentor.BLL.Couses
+namespace PianoMentor.BLL.Courses
 {
 	internal class CheckIfCourseItemExistsHandler(PianoMentorDbContext dbContext) : IRequestHandler<CheckIfCourseItemExistsRequest, DefaultResponse>
 	{

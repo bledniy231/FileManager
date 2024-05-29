@@ -1,14 +1,11 @@
-﻿using PianoMentor.DAL;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PianoMentor.Contract.Models.PianoMentor.Courses;
-using Microsoft.AspNetCore.Components.Web;
-using PianoMentor.Contract.Models.PianoMentor.Statistics;
 using PianoMentor.BLL.WordsEndings;
+using PianoMentor.Contract.Models.PianoMentor.Courses;
+using PianoMentor.Contract.Models.PianoMentor.Statistics;
 using PianoMentor.Contract.Models.PianoMentor.Texts;
-using PianoMentor.DAL.Models.PianoMentor.Texts;
-using System.Net;
 using PianoMentor.Contract.Statistics;
+using PianoMentor.DAL;
 
 namespace PianoMentor.BLL.Statistics
 {

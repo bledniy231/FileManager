@@ -4,7 +4,7 @@ using PianoMentor.DAL;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace PianoMentor.BLL.Couses
+namespace PianoMentor.BLL.Courses
 {
 	internal class GetCoursesHandler(PianoMentorDbContext dbContext) : IRequestHandler<GetCoursesRequest, GetCoursesResponse>
 	{
