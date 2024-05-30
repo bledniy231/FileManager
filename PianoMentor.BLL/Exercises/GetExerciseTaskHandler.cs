@@ -24,8 +24,8 @@ public class GetExerciseTaskHandler(PianoMentorDbContext dbContext) : IRequestHa
         {
             ExerciseTaskId = exerciseTask.ExerciseTaskId,
             CourseItemId = exerciseTask.CourseItemId,
-            ExerciseTypeName = exerciseTask.ExerciseType.ExerciseTypeName,
-            IntervalsInTaskNames = exerciseTask.IntervalsInTask.Select(x => x.IntervalName).ToList()
+            ExerciseTypeId = exerciseTask.ExerciseType.ExerciseTypeId,
+            IntervalsInTaskIds = exerciseTask.IntervalsInTask.Select(x => x.IntervalId).ToList()
         };
 
         return Task.FromResult(new GetExerciseTaskResponse(exerciseTaskModel, null));

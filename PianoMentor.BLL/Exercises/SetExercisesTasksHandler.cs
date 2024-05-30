@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using PianoMentor.Contract.Default;
 using PianoMentor.Contract.Exercises;
-using PianoMentor.Contract.Models.PianoMentor.Exercises;
 using PianoMentor.DAL;
 using PianoMentor.DAL.Models.PianoMentor.Exercises;
 
@@ -13,14 +12,18 @@ public class SetExercisesTasksHandler(PianoMentorDbContext dbContext) : IRequest
     {
         try
         {
+            var requestIntervals = request.ExerciseTasks
+                .SelectMany(et => et.IntervalsInTaskIds)
+                .ToList();
+            var neededIntervals = dbContext.Intervals
+                .Where(i => requestIntervals.Contains(i.IntervalId))
+                .ToList();
+            
             var exerciseTasks = request.ExerciseTasks.Select(et => new ExerciseTask
             {
                 CourseItemId = et.CourseItemId,
-                ExerciseTypeId = (int)Enum.Parse<ExerciseTypesEnum>(et.ExerciseTypeName),
-                IntervalsInTask = et.IntervalsInTaskNames.Select(n => new Interval()
-                {
-                    IntervalName = Enum.Parse<IntervalsEnum>(n).ToString()
-                }).ToList()
+                ExerciseTypeId = et.ExerciseTypeId,
+                IntervalsInTask = et.IntervalsInTaskIds.Select(it => neededIntervals.First(ni => ni.IntervalId == it)).ToList()
             }).ToList();
 
             dbContext.ExerciseTasks.AddRange(exerciseTasks);

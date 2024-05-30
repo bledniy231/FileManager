@@ -7,6 +7,6 @@ public class ExerciseTaskModel
     /// <summary>
     /// Тип упражнения (сравнение, определение, несколько интервалов в одном упражнении)
     /// </summary>
-    public string ExerciseTypeName { get; set; }
-    public List<string> IntervalsInTaskNames { get; set; }
+    public int ExerciseTypeId { get; set; }
+    public List<int> IntervalsInTaskIds { get; set; }
 }

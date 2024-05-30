@@ -5,5 +5,5 @@ namespace PianoMentor.Contract.Exercises;
 
 public class GetExerciseTaskResponse(ExerciseTaskModel exerciseTask, string[]? errors) : DefaultResponse(errors)
 {
-    public ExerciseTaskModel ExerciseTask { get; set; }
+    public ExerciseTaskModel ExerciseTask { get; set; } = exerciseTask;
 }
