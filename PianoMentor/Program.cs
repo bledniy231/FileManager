@@ -1,16 +1,16 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using PianoMentor.BLL;
-using PianoMentor.BLL.CryptoLinkManager;
-using PianoMentor.BLL.MultipartRequestHelper;
-using PianoMentor.BLL.TokenService;
-using PianoMentor.BLL.UploadPercentageChecker;
+using PianoMentor.BLL.Services.CryptoLinkManager;
+using PianoMentor.BLL.Services.FilesUploadManagers;
+using PianoMentor.BLL.Services.MultipartRequestHelper;
+using PianoMentor.BLL.Services.TokenService;
+using PianoMentor.BLL.Services.UploadPercentageChecker;
 using PianoMentor.Controllers;
 using PianoMentor.DAL;
 using PianoMentor.JsonSettings;
-using PianoMentor.Middleware;
-using System.Reflection;
 
 namespace PianoMentor
 {
@@ -48,6 +48,7 @@ namespace PianoMentor
 			builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			builder.Services.AddSingleton<ControllersHelper>();
 			builder.Services.TryAddSingleton<FormOptions>();
+			builder.Services.AddTransient<IUploadFilesManager, UploadFilesManager>();
 
 			builder.Services.Configure<FormOptions>(options =>
 			{

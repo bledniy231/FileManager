@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PianoMentor.Contract.Models.DataSet;
 using PianoMentor.Contract.Models.PianoMentor.Courses;
 using PianoMentor.Contract.Models.PianoMentor.Exercises;
 using PianoMentor.Contract.Models.PianoMentor.Quizzes;
-using PianoMentor.DAL.Domain.PianoMentor.Courses;
+using PianoMentor.DAL.Models.DataSet;
 using PianoMentor.DAL.Models.Identity;
+using PianoMentor.DAL.Models.PianoMentor.Courses;
 using PianoMentor.DAL.Models.PianoMentor.Exercises;
 using PianoMentor.DAL.Models.PianoMentor.Quizzes;
 using PianoMentor.DAL.Models.PianoMentor.Texts;
+using BinaryData = PianoMentor.DAL.Models.DataSet.BinaryData;
 
 namespace PianoMentor.DAL
 {
@@ -16,10 +19,11 @@ namespace PianoMentor.DAL
 		DbContextOptions<PianoMentorDbContext> options) 
 		: IdentityDbContext<PianoMentorUser, IdentityRole<long>, long>(options)
 	{
-		public DbSet<Domain.DataSet.DataSet> DataSets { get; set; }
-		public DbSet<Domain.DataSet.BinaryData> Binaries { get; set; }
-		public DbSet<Domain.DataSet.Storage> Storages { get; set; }
-		public DbSet<Domain.DataSet.OneTimeLink> OneTimeLinks { get; set; }
+		public DbSet<DataSet> DataSets { get; set; }
+		public DbSet<BinaryData> Binaries { get; set; }
+		public DbSet<Storage> Storages { get; set; }
+		public DbSet<BinaryType> BinaryTypes { get; set; }
+		public DbSet<OneTimeLink> OneTimeLinks { get; set; }
 		public DbSet<Course> Courses { get; set; }
 		public DbSet<CourseItem> CourseItems { get; set; }
 		public DbSet<CourseItemType> CourseItemTypes { get; set; }
@@ -53,27 +57,46 @@ namespace PianoMentor.DAL
 				new() { Id = 2, Name = "User", NormalizedName = "USER"}
 			]);
 
-			builder.Entity<Domain.DataSet.DataSet>(e =>
+			builder.Entity<DataSet>(e =>
 			{
 				e.ToTable("DataSets");
 
 				e.Property(p => p.Id).UseIdentityColumn(1, 1);
+				e.Property(p => p.IsDeleted).HasDefaultValue(false);
 
 				e.HasMany(p => p.Binaries).WithOne(p => p.DataSet).OnDelete(DeleteBehavior.Cascade);
 
 				e.HasOne(p => p.Storage);
 			});
 
-			builder.Entity<Domain.DataSet.BinaryData>(e =>
+			builder.Entity<BinaryData>(e =>
 			{
 				e.ToTable("Binaries");
 
 				e.HasKey(p => new { p.DataSetId, p.DataId }).IsClustered();
 
 				e.Property(p => p.Filename).IsUnicode(true).HasMaxLength(255).IsRequired();
+				e.Property(p => p.BinaryTypeId).HasDefaultValue(1);
+				e.Property(p => p.IsDeleted).HasDefaultValue(false);
+				
+				e.HasOne(p => p.BinaryType).WithMany().HasForeignKey(p => p.BinaryTypeId).OnDelete(DeleteBehavior.NoAction);
 			});
 
-			builder.Entity<Domain.DataSet.Storage>(e =>
+			builder.Entity<BinaryType>(e =>
+			{
+				e.ToTable("BinaryTypes");
+
+				e.HasKey(p => p.TypeId);
+
+				e.Property(p => p.TypeName).IsUnicode(false).HasMaxLength(100).IsRequired();
+				
+				foreach (var v in Enum.GetValues<BinaryTypeEnum>())
+				{
+					e.HasData(new { TypeId = (int)v, TypeName = v.ToString() });
+				}
+			});
+
+			builder.Entity<Storage>(e =>
 			{
 				e.ToTable("Storages");
 
@@ -89,7 +112,7 @@ namespace PianoMentor.DAL
 				]);
 			});
 
-			builder.Entity<Domain.DataSet.OneTimeLink>(e =>
+			builder.Entity<OneTimeLink>(e =>
 			{
 				e.ToTable("OneTimeLinks");
 
@@ -229,7 +252,7 @@ namespace PianoMentor.DAL
 
 				e.Property(p => p.Name).HasMaxLength(70).IsRequired();
 
-				foreach (var v in Enum.GetValues<QuizQuestionTypeEnumeration>())
+				foreach (var v in Enum.GetValues<QuizQuestionTypeEnum>())
 				{
 					e.HasData(new { QuizQuestionTypeId = (int)v, Name = v.ToString() });
 				}

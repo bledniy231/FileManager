@@ -1,4 +1,4 @@
-﻿namespace PianoMentor.DAL.Domain.PianoMentor.Courses
+﻿namespace PianoMentor.DAL.Models.PianoMentor.Courses
 {
     public class CourseItem
     {
@@ -10,7 +10,7 @@
         public DateTime UpdatedAt { get; set; }
         public long? AttachedDataSetId { get; set; }
         public bool IsDeleted { get; set; }
-        public virtual DataSet.DataSet AttachedDataSet { get; set; }
+        public virtual Models.DataSet.DataSet AttachedDataSet { get; set; }
         public virtual CourseItemType CourseItemType { get; set; }
         public virtual Course Course { get; set; }
     }

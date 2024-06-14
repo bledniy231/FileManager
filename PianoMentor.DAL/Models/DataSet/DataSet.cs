@@ -1,6 +1,6 @@
 ﻿using PianoMentor.DAL.Models.Identity;
 
-namespace PianoMentor.DAL.Domain.DataSet
+namespace PianoMentor.DAL.Models.DataSet
 {
 	public class DataSet
 	{
@@ -11,6 +11,7 @@ namespace PianoMentor.DAL.Domain.DataSet
 		/// Запись данных на диск была начата, но полностью не завершена.
 		/// </summary>
 		public bool IsDraft { get; set; }
+		public bool IsDeleted { get; set; }
 
 		public PianoMentorUser Owner { get; set; }
 		public ICollection<BinaryData> Binaries { get; set; }

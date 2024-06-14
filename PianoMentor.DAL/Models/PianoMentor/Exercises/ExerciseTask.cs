@@ -1,4 +1,4 @@
-﻿using PianoMentor.DAL.Domain.PianoMentor.Courses;
+﻿using PianoMentor.DAL.Models.PianoMentor.Courses;
 
 namespace PianoMentor.DAL.Models.PianoMentor.Exercises;
 

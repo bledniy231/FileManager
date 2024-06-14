@@ -6,8 +6,10 @@ using PianoMentor.Attributes;
 using PianoMentor.Contract.Courses;
 using PianoMentor.Contract.Default;
 using PianoMentor.Contract.Files;
+using PianoMentor.Contract.Files.Download;
+using PianoMentor.Contract.Files.OneTimeLink;
+using PianoMentor.Contract.Files.Upload;
 using PianoMentor.Contract.Models.PianoMentor.Courses;
-using PianoMentor.Contract.Quizzes;
 
 namespace PianoMentor.Controllers
 {
@@ -31,8 +33,8 @@ namespace PianoMentor.Controllers
 				return Unauthorized("Wrong user id");
 			}
 
-			var request = new UploadFilesRequest(userId, null, Request.ContentType, Request.Body);
-			return await controllersHelper.SendRequest<UploadFilesRequest, DefaultResponse>(request);
+			var request = new UploadUsersFilesRequest(userId, Request.ContentType, Request.Body);
+			return await controllersHelper.SendRequest<UploadUsersFilesRequest, DefaultResponse>(request);
 		}
 
 		[HttpGet]
@@ -177,8 +179,8 @@ namespace PianoMentor.Controllers
 				return NotFound($"Course item not found, errors: {string.Join("; ", isCourseItemExistResponse.Errors)}");
 			}
 
-			var uploadRequest = new UploadFilesRequest(userId, courseItemId, Request.ContentType, Request.Body);
-			return await controllersHelper.SendRequest<UploadFilesRequest, DefaultResponse>(uploadRequest);
+			var uploadRequest = new UploadCourseItemFileRequest(userId, courseItemId, Request.ContentType, Request.Body);
+			return await controllersHelper.SendRequest<UploadCourseItemFileRequest, DefaultResponse>(uploadRequest);
 		}
 
 		[HttpGet]
@@ -248,18 +250,23 @@ namespace PianoMentor.Controllers
 		
 		[Authorize]
 		[HttpGet]
-		public async Task<IActionResult> GetUserProfilePhoto([FromQuery] long userId)
+		public async Task<IActionResult> DownloadUserProfilePhoto([FromQuery] long userId)
 		{
 			if (!controllersHelper.IdentifyUser(User, userId))
 			{
 				return Unauthorized("Wrong user id");
 			}
 			
-			var response = await mediator.Send(new GetUserProfilePhotoRequest(userId));
+			var response = await mediator.Send(new DownloadUserProfilePhotoRequest(userId));
 			
 			if (response.Errors is { Length: > 0 })
 			{
 				return BadRequest(response.Errors);
+			}
+
+			if (response is { FileStream: null } or { ContentType: null } or { FileDownloadName: null })
+			{
+				return Ok();
 			}
 
 			return new FileStreamResult(response.FileStream, response.ContentType)

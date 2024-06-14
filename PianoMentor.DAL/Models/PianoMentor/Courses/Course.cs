@@ -1,4 +1,4 @@
-﻿namespace PianoMentor.DAL.Domain.PianoMentor.Courses
+﻿namespace PianoMentor.DAL.Models.PianoMentor.Courses
 {
     public class Course
     {

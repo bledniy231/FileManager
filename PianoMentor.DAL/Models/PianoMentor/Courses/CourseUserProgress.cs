@@ -1,6 +1,6 @@
 ﻿using PianoMentor.DAL.Models.Identity;
 
-namespace PianoMentor.DAL.Domain.PianoMentor.Courses
+namespace PianoMentor.DAL.Models.PianoMentor.Courses
 {
     public class CourseUserProgress
     {

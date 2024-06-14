@@ -88,7 +88,7 @@ namespace PianoMentor.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<ActionResult> Logout()
 		{
-			await mediator.Send(new LogoutUserRequest());
+			//await mediator.Send(new LogoutUserRequest());
 
 			return NoContent();
 		}

@@ -185,7 +185,7 @@ namespace PianoMentor.DAL.Migrations
                     b.ToTable("AspNetUserTokens", "PianoMentor");
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.BinaryData", b =>
+            modelBuilder.Entity("PianoMentor.DAL.Models.DataSet.BinaryData", b =>
                 {
                     b.Property<long>("DataSetId")
                         .HasColumnType("bigint");
@@ -193,11 +193,21 @@ namespace PianoMentor.DAL.Migrations
                     b.Property<int>("DataId")
                         .HasColumnType("int");
 
+                    b.Property<int>("BinaryTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<string>("Filename")
                         .IsRequired()
                         .HasMaxLength(255)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<long>("Length")
                         .HasColumnType("bigint");
@@ -206,10 +216,53 @@ namespace PianoMentor.DAL.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("DataSetId", "DataId"));
 
+                    b.HasIndex("BinaryTypeId");
+
                     b.ToTable("Binaries", "PianoMentor");
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.DataSet", b =>
+            modelBuilder.Entity("PianoMentor.DAL.Models.DataSet.BinaryType", b =>
+                {
+                    b.Property<int>("TypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TypeId"));
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("TypeId");
+
+                    b.ToTable("BinaryTypes", "PianoMentor");
+
+                    b.HasData(
+                        new
+                        {
+                            TypeId = 1,
+                            TypeName = "UserFile"
+                        },
+                        new
+                        {
+                            TypeId = 2,
+                            TypeName = "UserProfilePhoto"
+                        },
+                        new
+                        {
+                            TypeId = 3,
+                            TypeName = "CourseItemFile"
+                        },
+                        new
+                        {
+                            TypeId = 4,
+                            TypeName = "QuizQuestionFile"
+                        });
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.DataSet.DataSet", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -219,6 +272,11 @@ namespace PianoMentor.DAL.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsDraft")
                         .HasColumnType("bit");
@@ -238,7 +296,7 @@ namespace PianoMentor.DAL.Migrations
                     b.ToTable("DataSets", "PianoMentor");
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.OneTimeLink", b =>
+            modelBuilder.Entity("PianoMentor.DAL.Models.DataSet.OneTimeLink", b =>
                 {
                     b.Property<string>("UrlEncryptedToken")
                         .IsUnicode(false)
@@ -255,7 +313,7 @@ namespace PianoMentor.DAL.Migrations
                     b.ToTable("OneTimeLinks", "PianoMentor");
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.Storage", b =>
+            modelBuilder.Entity("PianoMentor.DAL.Models.DataSet.Storage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -289,223 +347,6 @@ namespace PianoMentor.DAL.Migrations
                             BasePath = "C:\\PianoMentor\\DevStorage",
                             Name = "DevStorage"
                         });
-                });
-
-            modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.Course", b =>
-                {
-                    b.Property<int>("CourseId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Subtitle")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("CourseId");
-
-                    b.ToTable("Courses", "PianoMentor");
-                });
-
-            modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItem", b =>
-                {
-                    b.Property<int>("CourseItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseItemId"));
-
-                    b.Property<long?>("AttachedDataSetId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CourseItemTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("CourseItemId");
-
-                    b.HasIndex("AttachedDataSetId")
-                        .IsUnique()
-                        .HasFilter("[AttachedDataSetId] IS NOT NULL");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("CourseItemTypeId");
-
-                    b.ToTable("CourseItems", "PianoMentor");
-                });
-
-            modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItemProgressType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CourseItemsProgressTypes", "PianoMentor");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "NotStarted"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "InProgress"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Completed"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Failed"
-                        });
-                });
-
-            modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItemType", b =>
-                {
-                    b.Property<int>("CourseItemTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseItemTypeId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("CourseItemTypeId");
-
-                    b.ToTable("CourseItemTypes", "PianoMentor");
-
-                    b.HasData(
-                        new
-                        {
-                            CourseItemTypeId = 1,
-                            Name = "Lecture"
-                        },
-                        new
-                        {
-                            CourseItemTypeId = 2,
-                            Name = "Exercise"
-                        },
-                        new
-                        {
-                            CourseItemTypeId = 3,
-                            Name = "Quiz"
-                        });
-                });
-
-            modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItemUserProgress", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("CourseItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CourseItemProgressTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseItemId");
-
-                    b.HasIndex("CourseItemProgressTypeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CourseItemsUsersProgresses", "PianoMentor");
-                });
-
-            modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseUserProgress", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProgressInPercent")
-                        .HasColumnType("int");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CourseUsersProgresses", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.Identity.PianoMentorUser", b =>
@@ -585,6 +426,223 @@ namespace PianoMentor.DAL.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", "PianoMentor");
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Courses.Course", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Subtitle")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("CourseId");
+
+                    b.ToTable("Courses", "PianoMentor");
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItem", b =>
+                {
+                    b.Property<int>("CourseItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseItemId"));
+
+                    b.Property<long?>("AttachedDataSetId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseItemTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("CourseItemId");
+
+                    b.HasIndex("AttachedDataSetId")
+                        .IsUnique()
+                        .HasFilter("[AttachedDataSetId] IS NOT NULL");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("CourseItemTypeId");
+
+                    b.ToTable("CourseItems", "PianoMentor");
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItemProgressType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CourseItemsProgressTypes", "PianoMentor");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "NotStarted"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "InProgress"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Completed"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Failed"
+                        });
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItemType", b =>
+                {
+                    b.Property<int>("CourseItemTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseItemTypeId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("CourseItemTypeId");
+
+                    b.ToTable("CourseItemTypes", "PianoMentor");
+
+                    b.HasData(
+                        new
+                        {
+                            CourseItemTypeId = 1,
+                            Name = "Lecture"
+                        },
+                        new
+                        {
+                            CourseItemTypeId = 2,
+                            Name = "Exercise"
+                        },
+                        new
+                        {
+                            CourseItemTypeId = 3,
+                            Name = "Quiz"
+                        });
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItemUserProgress", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("CourseItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseItemProgressTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseItemId");
+
+                    b.HasIndex("CourseItemProgressTypeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CourseItemsUsersProgresses", "PianoMentor");
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Courses.CourseUserProgress", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProgressInPercent")
+                        .HasColumnType("int");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CourseUsersProgresses", "PianoMentor");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Exercises.ExerciseTask", b =>
@@ -1010,18 +1068,26 @@ namespace PianoMentor.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.BinaryData", b =>
+            modelBuilder.Entity("PianoMentor.DAL.Models.DataSet.BinaryData", b =>
                 {
-                    b.HasOne("PianoMentor.DAL.Domain.DataSet.DataSet", "DataSet")
+                    b.HasOne("PianoMentor.DAL.Models.DataSet.BinaryType", "BinaryType")
+                        .WithMany()
+                        .HasForeignKey("BinaryTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PianoMentor.DAL.Models.DataSet.DataSet", "DataSet")
                         .WithMany("Binaries")
                         .HasForeignKey("DataSetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("BinaryType");
+
                     b.Navigation("DataSet");
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.DataSet", b =>
+            modelBuilder.Entity("PianoMentor.DAL.Models.DataSet.DataSet", b =>
                 {
                     b.HasOne("PianoMentor.DAL.Models.Identity.PianoMentorUser", "Owner")
                         .WithMany("DataSets")
@@ -1029,7 +1095,7 @@ namespace PianoMentor.DAL.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PianoMentor.DAL.Domain.DataSet.Storage", "Storage")
+                    b.HasOne("PianoMentor.DAL.Models.DataSet.Storage", "Storage")
                         .WithMany()
                         .HasForeignKey("StorageId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1040,20 +1106,20 @@ namespace PianoMentor.DAL.Migrations
                     b.Navigation("Storage");
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItem", b =>
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItem", b =>
                 {
-                    b.HasOne("PianoMentor.DAL.Domain.DataSet.DataSet", "AttachedDataSet")
+                    b.HasOne("PianoMentor.DAL.Models.DataSet.DataSet", "AttachedDataSet")
                         .WithOne()
-                        .HasForeignKey("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItem", "AttachedDataSetId")
+                        .HasForeignKey("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItem", "AttachedDataSetId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("PianoMentor.DAL.Domain.PianoMentor.Courses.Course", "Course")
+                    b.HasOne("PianoMentor.DAL.Models.PianoMentor.Courses.Course", "Course")
                         .WithMany("CourseItems")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItemType", "CourseItemType")
+                    b.HasOne("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItemType", "CourseItemType")
                         .WithMany()
                         .HasForeignKey("CourseItemTypeId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1066,15 +1132,15 @@ namespace PianoMentor.DAL.Migrations
                     b.Navigation("CourseItemType");
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItemUserProgress", b =>
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItemUserProgress", b =>
                 {
-                    b.HasOne("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItem", "CourseItem")
+                    b.HasOne("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItem", "CourseItem")
                         .WithMany()
                         .HasForeignKey("CourseItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItemProgressType", "CourseItemProgressType")
+                    b.HasOne("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItemProgressType", "CourseItemProgressType")
                         .WithMany()
                         .HasForeignKey("CourseItemProgressTypeId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1093,9 +1159,9 @@ namespace PianoMentor.DAL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseUserProgress", b =>
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Courses.CourseUserProgress", b =>
                 {
-                    b.HasOne("PianoMentor.DAL.Domain.PianoMentor.Courses.Course", "Course")
+                    b.HasOne("PianoMentor.DAL.Models.PianoMentor.Courses.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1114,7 +1180,7 @@ namespace PianoMentor.DAL.Migrations
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Exercises.ExerciseTask", b =>
                 {
-                    b.HasOne("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItem", "CourseItem")
+                    b.HasOne("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItem", "CourseItem")
                         .WithMany()
                         .HasForeignKey("CourseItemId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1133,12 +1199,12 @@ namespace PianoMentor.DAL.Migrations
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestion", b =>
                 {
-                    b.HasOne("PianoMentor.DAL.Domain.DataSet.DataSet", "AttachedDataSet")
+                    b.HasOne("PianoMentor.DAL.Models.DataSet.DataSet", "AttachedDataSet")
                         .WithOne()
                         .HasForeignKey("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestion", "AttachedDataSetId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("PianoMentor.DAL.Domain.PianoMentor.Courses.CourseItem", "CourseItem")
+                    b.HasOne("PianoMentor.DAL.Models.PianoMentor.Courses.CourseItem", "CourseItem")
                         .WithMany()
                         .HasForeignKey("CourseItemId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1204,19 +1270,19 @@ namespace PianoMentor.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PianoMentor.DAL.Domain.DataSet.DataSet", b =>
+            modelBuilder.Entity("PianoMentor.DAL.Models.DataSet.DataSet", b =>
                 {
                     b.Navigation("Binaries");
-                });
-
-            modelBuilder.Entity("PianoMentor.DAL.Domain.PianoMentor.Courses.Course", b =>
-                {
-                    b.Navigation("CourseItems");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.Identity.PianoMentorUser", b =>
                 {
                     b.Navigation("DataSets");
+                });
+
+            modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Courses.Course", b =>
+                {
+                    b.Navigation("CourseItems");
                 });
 
             modelBuilder.Entity("PianoMentor.DAL.Models.PianoMentor.Quizzes.QuizQuestion", b =>

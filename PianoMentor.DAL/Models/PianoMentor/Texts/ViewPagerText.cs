@@ -1,6 +1,4 @@
-﻿using PianoMentor.DAL.Domain.PianoMentor.Courses;
-
-namespace PianoMentor.DAL.Models.PianoMentor.Texts
+﻿namespace PianoMentor.DAL.Models.PianoMentor.Texts
 {
 	public class ViewPagerText
 	{

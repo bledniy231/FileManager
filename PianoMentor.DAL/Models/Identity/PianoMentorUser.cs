@@ -8,6 +8,6 @@ namespace PianoMentor.DAL.Models.Identity
 		public string? RefreshToken { get; set; }
 		public DateTime RefreshTokenExpireTime { get; set; }
 		public bool IsDeleted { get; set; }
-		public ICollection<Domain.DataSet.DataSet> DataSets { get; set; }
+		public virtual ICollection<DataSet.DataSet> DataSets { get; set; }
 	}
 }

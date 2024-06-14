@@ -1,8 +1,11 @@
-﻿namespace PianoMentor.BLL
+﻿using PianoMentor.DAL.Models.DataSet;
+using BinaryData = PianoMentor.DAL.Models.DataSet.BinaryData;
+
+namespace PianoMentor.BLL
 {
 	public static class BllExtensions
 	{
-		public static FileInfo GetInternalFile(this DAL.Domain.DataSet.BinaryData binaryData)
+		public static FileInfo GetInternalFile(this BinaryData binaryData)
 		{
 			ArgumentNullException.ThrowIfNull(binaryData);
 			ArgumentNullException.ThrowIfNull(binaryData.DataSet);
@@ -17,7 +20,7 @@
 			return new FileInfo(path);
 		}
 
-		public static string GetDataSetDirectory(this DAL.Domain.DataSet.DataSet dataSet)
+		public static string GetDataSetDirectory(this DataSet dataSet)
 		{
 			string path = Path.Combine(dataSet.Storage.BasePath,
 				(dataSet.Id / 1000 / 1000).ToString("d3"),

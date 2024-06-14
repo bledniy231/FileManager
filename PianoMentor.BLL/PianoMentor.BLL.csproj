@@ -17,4 +17,9 @@
     <ProjectReference Include="..\PianoMentor.DAL\PianoMentor.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="UseCases\" />
+  </ItemGroup>
+
 </Project>

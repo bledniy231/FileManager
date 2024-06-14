@@ -1,5 +1,5 @@
-﻿using PianoMentor.BLL.TokenService;
-using System.Net;
+﻿using System.Net;
+using PianoMentor.BLL.Services.TokenService;
 
 namespace PianoMentor.Middleware
 {

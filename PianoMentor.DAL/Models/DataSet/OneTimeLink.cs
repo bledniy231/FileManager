@@ -1,4 +1,4 @@
-﻿namespace PianoMentor.DAL.Domain.DataSet
+﻿namespace PianoMentor.DAL.Models.DataSet
 {
 	public class OneTimeLink
 	{
