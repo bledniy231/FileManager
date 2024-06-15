@@ -211,12 +211,7 @@ public class UploadFilesManager(
 			failedLoadFilesWithErrors.Add("Some files failed to load, rollback uploading files... Try again");
 			return new UploadingResponse(null, [..failedLoadFilesWithErrors]);
 		}
-
-		newDataSet.Binaries = binaries;
-		newDataSet.IsDraft = false;
-		managedUser.DataSets.Add(newDataSet);
-		await dbContext.SaveChangesAsync(cancellationToken);
-
+		
 		if (binaryType == BinaryTypeEnum.UserProfilePhoto)
 		{
 			var user = await dbContext.Users
@@ -226,16 +221,23 @@ public class UploadFilesManager(
 				.FirstOrDefaultAsync(cancellationToken);
 
 			var photos = user?.DataSets
+				.Where(ds => !ds.IsDraft)
 				.SelectMany(ds => ds.Binaries)
-				.Where(b => !b.IsDeleted && b.BinaryTypeId == (int)BinaryTypeEnum.UserProfilePhoto)
+				.Where(b => 
+					!b.IsDeleted 
+					&& b.BinaryTypeId == (int)BinaryTypeEnum.UserProfilePhoto)
 				.ToList();
+			
 			foreach (var ph in photos ?? [])
 			{
 				ph.IsDeleted = true;
 			}
-			
-			await dbContext.SaveChangesAsync(cancellationToken);
 		}
+
+		newDataSet.Binaries = binaries;
+		newDataSet.IsDraft = false;
+		managedUser.DataSets.Add(newDataSet);
+		await dbContext.SaveChangesAsync(cancellationToken);
 		
 		return new UploadingResponse(newDataSet);
 	}

@@ -15,6 +15,8 @@ public class DownloadUserProfilePhotoHandler(PianoMentorDbContext dbContext) : I
             .AsNoTracking()
             .Include(u => u.DataSets)
             .ThenInclude(ds => ds.Binaries)
+            .Include(u => u.DataSets)
+            .ThenInclude(ds => ds.Storage)
             .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
         if (user == null)
         {
@@ -48,9 +50,11 @@ public class DownloadUserProfilePhotoHandler(PianoMentorDbContext dbContext) : I
                 {
                     contentType = "application/octet-stream";
                 }
+                
+                return new DownloadFilesResponse(fileStream, contentType, file?.Extension, null);
             }
-
-            return new DownloadFilesResponse(fileStream, contentType, file?.Extension, null);
+            
+            return new DownloadFilesResponse(null, null, null, ["Фото профиля не найдено"]);
         }
         catch (Exception e)
         {

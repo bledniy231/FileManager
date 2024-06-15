@@ -275,7 +275,7 @@ namespace PianoMentor.Controllers
 		}
 		
 		[Authorize]
-		[HttpPut]
+		[HttpPost]
 		[Consumes("multipart/form-data")]
 		[DisableRequestSizeLimit]
 		[DisableFormValueModelBinding]
