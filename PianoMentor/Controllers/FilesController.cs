@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PianoMentor.Attributes;
 using PianoMentor.Contract.Courses;
-using PianoMentor.Contract.Default;
 using PianoMentor.Contract.Files;
 using PianoMentor.Contract.Files.Download;
 using PianoMentor.Contract.Files.OneTimeLink;
@@ -34,7 +33,7 @@ namespace PianoMentor.Controllers
 			}
 
 			var request = new UploadUsersFilesRequest(userId, Request.ContentType, Request.Body);
-			return await controllersHelper.SendRequest<UploadUsersFilesRequest, DefaultResponse>(request);
+			return await controllersHelper.SendRequest<UploadUsersFilesRequest, UploadFilesResponse>(request);
 		}
 
 		[HttpGet]
@@ -180,7 +179,7 @@ namespace PianoMentor.Controllers
 			}
 
 			var uploadRequest = new UploadCourseItemFileRequest(userId, courseItemId, Request.ContentType, Request.Body);
-			return await controllersHelper.SendRequest<UploadCourseItemFileRequest, DefaultResponse>(uploadRequest);
+			return await controllersHelper.SendRequest<UploadCourseItemFileRequest, UploadFilesResponse>(uploadRequest);
 		}
 
 		[HttpGet]
@@ -245,7 +244,7 @@ namespace PianoMentor.Controllers
 			}
 
 			var request = new UploadQuestionImageRequest(userId, questionId, Request.ContentType, Request.Body);
-			return await controllersHelper.SendRequest<UploadQuestionImageRequest, DefaultResponse>(request);
+			return await controllersHelper.SendRequest<UploadQuestionImageRequest, UploadFilesResponse>(request);
 		}
 		
 		[Authorize]
@@ -288,7 +287,7 @@ namespace PianoMentor.Controllers
 			}
 			
 			var request = new UploadUserProfilePhotoRequest(userId, Request.ContentType, Request.Body);
-			return await controllersHelper.SendRequest<UploadUserProfilePhotoRequest, DefaultResponse>(request);
+			return await controllersHelper.SendRequest<UploadUserProfilePhotoRequest, UploadFilesResponse>(request);
 		}
 	}
 }
