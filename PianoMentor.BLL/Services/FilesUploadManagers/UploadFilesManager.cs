@@ -61,7 +61,9 @@ public class UploadFilesManager(
 			return new UploadingResponse(null, ["Unsupported media type in request"]);
 		}
 
-		var managedUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == ownerId, cancellationToken);
+		var managedUser = await dbContext.Users
+			.Include(u => u.DataSets)
+			.FirstOrDefaultAsync(u => u.Id == ownerId, cancellationToken);
 		if (managedUser == null)
 		{
 			return new UploadingResponse(null, ["Incorrect userId"]);
@@ -72,16 +74,25 @@ public class UploadFilesManager(
 		{
 			return new UploadingResponse(null, ["No storage with write access"]);
 		}
-		
+
+		var createdAt = DateTime.UtcNow;
 		var newDataSet = new DataSet
 		{
 			IsDraft = true,
-			CreatedAt = DateTime.UtcNow,
+			CreatedAt = createdAt,
 			Storage = storage,
 			OwnerId = ownerId
 		};
-		
+
+		dbContext.Add(newDataSet);
 		dbContext.SaveChanges();
+		newDataSet = await dbContext.DataSets
+			.FirstOrDefaultAsync(ds => 
+				!ds.IsDeleted 
+				&& ds.IsDraft 
+				&& ds.CreatedAt == createdAt 
+				&& ds.OwnerId == ownerId,
+				cancellationToken);
 
 		var binaries = new List<BinaryData>();
 
