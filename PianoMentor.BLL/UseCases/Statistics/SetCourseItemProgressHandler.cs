@@ -13,6 +13,12 @@ namespace PianoMentor.BLL.UseCases.Statistics
         {
             try
             {
+                var courseItemExists = dbContext.CourseItems.Any(ci => ci.CourseItemId == request.CourseItemId);
+                if (!courseItemExists)
+                {
+                    return Task.FromResult(new DefaultResponse([$"Cannot find course item id with id \'{request.CourseItemId}\'"]));
+                }
+                
                 var itemProgressDb = dbContext.CourseItemUserProgresses
                     .FirstOrDefault(ciup =>
                         ciup.UserId == request.UserId
@@ -38,12 +44,13 @@ namespace PianoMentor.BLL.UseCases.Statistics
                     return Task.FromResult(new DefaultResponse([$"Course item progress type \'{request.CourseItemProgressType}\' is not valid"]));
                 }
                 dbContext.SaveChanges();
-
+                
                 var countAllCourseItems = dbContext.CourseItems.Count(ci => ci.CourseId == request.CourseId);
                 if (countAllCourseItems == 0)
                 {
                     return Task.FromResult(new DefaultResponse([$"Course \'{request.CourseId}\' has no items"]));
                 }
+                
                 var countCompletedCourseItems = dbContext.CourseItemUserProgresses
                     .Count(ciup =>
                         ciup.UserId == request.UserId
