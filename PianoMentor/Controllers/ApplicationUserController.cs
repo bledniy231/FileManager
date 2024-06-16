@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PianoMentor.Certificates;
 using PianoMentor.Contract.ApplicationUser;
+using PianoMentor.Contract.Models.PianoMentor.ApplicationUser;
 using PianoMentor.Contract.Statistics;
 
 namespace PianoMentor.Controllers
@@ -92,6 +93,33 @@ namespace PianoMentor.Controllers
 
 			return NoContent();
 		}
+		
+		[Authorize]
+		[HttpPost]
+		public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordModel model)
+        {
+	        if (!controllersHelper.IdentifyUser(User, model.UserId))
+	        {
+		        return Unauthorized("Wrong user id");
+	        }
+
+	        var request = new ChangePasswordRequest
+	        {
+		        User = User,
+		        OldPassword = model.OldPassword,
+		        NewPassword = model.NewPassword,
+		        RepeatNewPassword = model.RepeatNewPassword
+	        };
+	        
+            var userUpdateResponse = await mediator.Send(request);
+
+            if (!userUpdateResponse.Errors.IsNullOrEmpty())
+            {
+                return BadRequest(userUpdateResponse.Errors);
+            }
+
+            return Ok(userUpdateResponse);
+        }
 
 		[Authorize]
 		[HttpGet]
@@ -105,25 +133,6 @@ namespace PianoMentor.Controllers
 			var coursesUserStatistics = await mediator.Send(new GetUserStatisticsRequest(userId));
 
 			return Ok(coursesUserStatistics);
-		}
-
-
-
-
-		[HttpGet]
-		public Task<IActionResult> CreateServerCertificate()
-		{
-			var serverCertificateManager = new PianoMentorServerCertificateManager();
-			serverCertificateManager.Create();
-			return Task.FromResult<IActionResult>(Ok());
-		}
-
-		[HttpGet]
-		public Task<IActionResult> CreateClientCertificate()
-		{
-			var clientCertificateManager = new PianoMentorClientCertificateManager();
-			clientCertificateManager.Create();
-			return Task.FromResult<IActionResult>(Ok());
 		}
 	}
 }
