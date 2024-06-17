@@ -26,7 +26,7 @@ internal class UploadCourseItemFileHandler(
             return new UploadFilesResponse(0, uploadingResult.Errors);
         }
         
-        courseItem.AttachedDataSet = uploadingResult.NewDataSet;
+        courseItem.AttachedDataSetId = uploadingResult.NewDataSet.Id;
         dbContext.SaveChanges();
         
         return new UploadFilesResponse(uploadingResult.NewDataSet.Id);

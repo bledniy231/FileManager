@@ -153,9 +153,8 @@ namespace PianoMentor.Controllers
 
 			return fsResult;
 		}
-		
-		
-				[HttpPost]
+
+		[HttpPost]
 		[Authorize]
 		[Consumes("multipart/form-data")]
 		[DisableRequestSizeLimit]

@@ -24,7 +24,7 @@ namespace PianoMentor.BLL.UseCases.Files.Upload
 				return new UploadFilesResponse(0, uploadingResult.Errors);
 			}
 
-			questionDb.AttachedDataSet = uploadingResult.NewDataSet; 
+			questionDb.AttachedDataSetId = uploadingResult.NewDataSet.Id; 
 			dbContext.SaveChanges();
 
 			return new UploadFilesResponse(0, null);

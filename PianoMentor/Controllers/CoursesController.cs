@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PianoMentor.Contract.Courses;
 using PianoMentor.Contract.Default;
 using PianoMentor.Contract.Exercises;
+using PianoMentor.Contract.Models.PianoMentor.Courses;
 using PianoMentor.Contract.Quizzes;
 using PianoMentor.Contract.Statistics;
 
@@ -30,6 +31,13 @@ namespace PianoMentor.Controllers
 			}
 
 			return await controllersHelper.SendRequest<GetCourseItemsRequest, GetCourseItemsResponse>(new GetCourseItemsRequest { UserId = userId, CourseId = courseId });
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> GetCourseItemsWithFilter([FromQuery] long userId, [FromQuery] string filter)
+		{
+			var courseItemTypeId = Enum.TryParse(typeof(CourseItemTypesEnum), filter, out var result) ? (int)result : (int)CourseItemTypesEnum.Lecture;
+			return await controllersHelper.SendRequest<GetCourseItemsWithFilterRequest, GetCourseItemsResponse>(new GetCourseItemsWithFilterRequest(userId, courseItemTypeId));
 		}
 
 		[HttpPut]
